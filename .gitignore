@@ -1,0 +1,13 @@
+# Kredensial & config sensitif
+config/database.php
+
+# File upload user
+uploads/produk/*
+!uploads/produk/.gitkeep
+
+uploads/nota/*
+!uploads/nota/.gitkeep
+
+# File OS/editor
+.DS_Store
+Thumbs.db
