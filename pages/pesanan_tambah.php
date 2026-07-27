@@ -36,7 +36,7 @@ unset($_SESSION['flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesanan Baru - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -121,11 +121,10 @@ unset($_SESSION['flash']);
                 <!-- ===== ITEM PESANAN ===== -->
                 <div class="panel" style="margin-bottom:20px;">
                     <h3>Item Pesanan</h3>
-                <div style="display:grid; grid-template-columns: 1.6fr 1.6fr 60px 100px 100px 100px 36px; gap:8px; font-size:11px; color:var(--color-text-muted); margin-bottom:4px;">
+                <div class="item-grid-header-order" style="font-size:11px; color:var(--color-text-muted); margin-bottom:4px;">
                     <span>Produk</span><span>Nama Item</span><span>Qty</span><span>Harga Jual</span><span>Ops</span><span>Jasa</span><span></span>
                 </div>
                 <div id="items-container"></div>
-                    <div id="items-container"></div>
                     <button type="button" class="btn btn-secondary btn-sm" onclick="addItemRow()">+ Tambah Item</button>
                     <div style="margin-top:12px; font-weight:700;">
                         Total: Rp<span id="total-harga-display">0</span>
@@ -176,23 +175,22 @@ function bahanOptions() {
 function addItemRow() {
     const idx = itemIndex++;
     const div = document.createElement('div');
-    div.className = 'item-row-form';
-    div.style = 'display:grid; grid-template-columns: 1.6fr 1.6fr 60px 100px 100px 100px 36px; gap:8px; margin-bottom:10px; align-items:center;';
+    div.className = 'item-row-form-order';
     div.innerHTML = `
-        <select onchange="onProdukChange(this, ${idx})">${produkOptions()}</select>
-        <input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" required>
-        <input type="number" name="items[${idx}][qty]" value="1" min="1" onchange="hitungTotal()" title="Qty">
-        <input type="number" name="items[${idx}][harga]" placeholder="Harga jual" onchange="hitungTotal()" title="Harga Jual">
-        <input type="number" name="items[${idx}][biaya_operasional]" placeholder="Ops" value="0" title="Biaya Operasional">
-        <input type="number" name="items[${idx}][biaya_jasa]" placeholder="Jasa" value="0" title="Biaya Jasa">
-        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); hitungTotal();">✖</button>
+        <div><select onchange="onProdukChange(this, ${idx})">${produkOptions()}</select></div>
+        <div><input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" required></div>
+        <div><label class="mobile-label">Qty</label><input type="number" name="items[${idx}][qty]" value="1" min="1" onchange="hitungTotal()" title="Qty"></div>
+        <div><label class="mobile-label">Harga</label><input type="number" name="items[${idx}][harga]" placeholder="Harga jual" onchange="hitungTotal()" title="Harga Jual"></div>
+        <div><label class="mobile-label">Ops</label><input type="number" name="items[${idx}][biaya_operasional]" placeholder="Ops" value="0" title="Biaya Operasional"></div>
+        <div><label class="mobile-label">Jasa</label><input type="number" name="items[${idx}][biaya_jasa]" placeholder="Jasa" value="0" title="Biaya Jasa"></div>
+        <div><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove(); hitungTotal();">✖</button></div>
         <input type="hidden" name="items[${idx}][produk_id]" value="">
     `;
     document.getElementById('items-container').appendChild(div);
 }
 
 function onProdukChange(select, idx) {
-    const row = select.closest('.item-row-form');
+    const row = select.closest('.item-row-form-order');
     const opt = select.selectedOptions[0];
     const produkIdInput = row.querySelector(`input[name="items[${idx}][produk_id]"]`);
     const namaInput = row.querySelector(`input[name="items[${idx}][nama_item]"]`);
@@ -218,7 +216,7 @@ function onProdukChange(select, idx) {
 
 function hitungTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         const harga = parseFloat(row.querySelector('input[name*="[harga]"]').value) || 0;
         total += qty * harga;
@@ -230,7 +228,6 @@ function addBahanRow(bahanId = '', jumlah = '') {
     const idx = bahanIndex++;
     const div = document.createElement('div');
     div.className = 'bahan-row-form';
-    div.style = 'display:grid; grid-template-columns: 2fr 1fr 40px; gap:12px; margin-bottom:12px; align-items:center;';
     
     // Populate select HTML directly with options
     let selectHtml = `<select name="bahan[${idx}][bahan_baku_id]" required>${bahanOptions()}</select>`;
@@ -254,7 +251,7 @@ function addBahanRow(bahanId = '', jumlah = '') {
 
 function isiOtomatisResep() {
     const agregat = {};
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const produkId = row.querySelector('input[name*="[produk_id]"]').value;
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         if (produkId && RESEP[produkId]) {
@@ -278,7 +275,7 @@ function isiOtomatisResep() {
 
 document.querySelector('form').addEventListener('submit', function(e) {
     let total = 0;
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         const harga = parseFloat(row.querySelector('input[name*="[harga]"]').value) || 0;
         total += qty * harga;

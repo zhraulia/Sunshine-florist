@@ -47,7 +47,7 @@ $ringkasan_kas = $stmt_sum->fetch();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kas Operasional - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -135,7 +135,7 @@ $ringkasan_kas = $stmt_sum->fetch();
 
             <!-- ===== FILTER BAR ===== -->
             <div class="panel" style="margin-bottom:20px;">
-                <form method="GET" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+                <form method="GET" class="filter-form">
                     <div class="form-group" style="margin-bottom:0;">
                         <label>Tanggal Awal</label>
                         <input type="date" name="tgl_awal" value="<?= $tgl_awal ?>" required>

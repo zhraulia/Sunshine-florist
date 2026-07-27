@@ -287,7 +287,7 @@ if ($tab === 'labarugi') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -298,8 +298,8 @@ if ($tab === 'labarugi') {
 
             <!-- ===== FILTER ===== -->
             <div class="panel" style="margin-bottom:20px;">
-                <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap;">
-                    <div style="display:flex; gap:8px;">
+                <div class="filter-form">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
                         <a href="?mode=harian&tanggal=<?= $tanggal ?>" class="btn <?= $mode === 'harian' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Harian</a>
                         <a href="?mode=bulanan&bulan=<?= $bulan ?>" class="btn <?= $mode === 'bulanan' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Bulanan</a>
                         <a href="?mode=tahunan&tahun=<?= $tahun ?>" class="btn <?= $mode === 'tahunan' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Tahunan</a>
@@ -307,7 +307,7 @@ if ($tab === 'labarugi') {
                     </div>
 
                     <?php if ($mode === 'harian'): ?>
-                        <form method="GET" style="display:flex; gap:8px; align-items:end;">
+                        <form method="GET" style="display:contents;">
                             <input type="hidden" name="mode" value="harian">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Pilih Tanggal</label>
@@ -315,7 +315,7 @@ if ($tab === 'labarugi') {
                             </div>
                         </form>
                     <?php elseif ($mode === 'bulanan'): ?>
-                        <form method="GET" style="display:flex; gap:8px; align-items:end;">
+                        <form method="GET" style="display:contents;">
                             <input type="hidden" name="mode" value="bulanan">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Pilih Bulan</label>
@@ -323,9 +323,9 @@ if ($tab === 'labarugi') {
                             </div>
                         </form>
                     <?php elseif ($mode === 'tahunan'): ?>
-                        <form method="GET" style="display:flex; gap:8px; align-items:end;">
+                        <form method="GET" style="display:contents;">
                             <input type="hidden" name="mode" value="tahunan">
-                            <div class="form-group" style="margin-bottom:0;">
+                            <div class="form-group" style="margin-bottom:0; width:120px;">
                                 <label>Pilih Tahun</label>
                                 <select name="tahun" onchange="this.form.submit()">
                                     <?php 
@@ -338,7 +338,7 @@ if ($tab === 'labarugi') {
                             </div>
                         </form>
                     <?php elseif ($mode === 'rentang'): ?>
-                        <form method="GET" style="display:flex; gap:8px; align-items:end;">
+                        <form method="GET" style="display:contents;">
                             <input type="hidden" name="mode" value="rentang">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label>Tanggal Awal</label>
@@ -348,7 +348,7 @@ if ($tab === 'labarugi') {
                                 <label>Tanggal Akhir</label>
                                 <input type="date" name="tgl_akhir" value="<?= $tgl_akhir ?>" required>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm" style="height:42px; margin-bottom:0; font-weight:700; background:var(--color-primary); border-color:var(--color-primary);">Filter</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
                         </form>
                     <?php endif; ?>
                 </div>

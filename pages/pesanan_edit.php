@@ -60,7 +60,7 @@ unset($_SESSION['flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Pesanan - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -146,7 +146,7 @@ unset($_SESSION['flash']);
                 <!-- ===== ITEM PESANAN ===== -->
                 <div class="panel" style="margin-bottom:20px;">
                     <h3>Item Pesanan</h3>
-                    <div style="display:grid; grid-template-columns: 1.6fr 1.6fr 60px 100px 100px 100px 36px; gap:8px; font-size:11px; color:var(--color-text-muted); margin-bottom:4px;">
+                    <div class="item-grid-header-order" style="font-size:11px; color:var(--color-text-muted); margin-bottom:4px;">
                         <span>Produk</span><span>Nama Item</span><span>Qty</span><span>Harga Jual</span><span>Ops</span><span>Jasa</span><span></span>
                     </div>
                     <div id="items-container"></div>
@@ -216,19 +216,18 @@ function addItemRow(produkId = '', namaItem = '', qty = 1, harga = '', ops = 0, 
     }
     const idx = itemIndex++;
     const div = document.createElement('div');
-    div.className = 'item-row-form';
-    div.style = 'display:grid; grid-template-columns: 1.6fr 1.6fr 60px 100px 100px 100px 36px; gap:8px; margin-bottom:10px; align-items:center;';
+    div.className = 'item-row-form-order';
     
     let selectHtml = `<select onchange="onProdukChange(this, ${idx})">${produkOptions()}</select>`;
     
     div.innerHTML = `
-        ${selectHtml}
-        <input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" value="${escapeHtml(namaItem)}" required>
-        <input type="number" name="items[${idx}][qty]" value="${qty}" min="1" onchange="hitungTotal()" title="Qty">
-        <input type="number" name="items[${idx}][harga]" placeholder="Harga jual" value="${harga !== '' ? Math.round(parseFloat(harga)) : ''}" onchange="hitungTotal()" title="Harga Jual">
-        <input type="number" name="items[${idx}][biaya_operasional]" placeholder="Ops" value="${Math.round(parseFloat(ops))}" title="Biaya Operasional">
-        <input type="number" name="items[${idx}][biaya_jasa]" placeholder="Jasa" value="${Math.round(parseFloat(jasa))}" title="Biaya Jasa">
-        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); hitungTotal();">✖</button>
+        <div>${selectHtml}</div>
+        <div><input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" value="${escapeHtml(namaItem)}" required></div>
+        <div><label class="mobile-label">Qty</label><input type="number" name="items[${idx}][qty]" value="${qty}" min="1" onchange="hitungTotal()" title="Qty"></div>
+        <div><label class="mobile-label">Harga</label><input type="number" name="items[${idx}][harga]" placeholder="Harga jual" value="${harga !== '' ? Math.round(parseFloat(harga)) : ''}" onchange="hitungTotal()" title="Harga Jual"></div>
+        <div><label class="mobile-label">Ops</label><input type="number" name="items[${idx}][biaya_operasional]" placeholder="Ops" value="${Math.round(parseFloat(ops))}" title="Biaya Operasional"></div>
+        <div><label class="mobile-label">Jasa</label><input type="number" name="items[${idx}][biaya_jasa]" placeholder="Jasa" value="${Math.round(parseFloat(jasa))}" title="Biaya Jasa"></div>
+        <div><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove(); hitungTotal();">✖</button></div>
         <input type="hidden" name="items[${idx}][produk_id]" value="${produkId}">
     `;
     
@@ -241,7 +240,7 @@ function addItemRow(produkId = '', namaItem = '', qty = 1, harga = '', ops = 0, 
 }
 
 function onProdukChange(select, idx) {
-    const row = select.closest('.item-row-form');
+    const row = select.closest('.item-row-form-order');
     const opt = select.selectedOptions[0];
     const produkIdInput = row.querySelector(`input[name="items[${idx}][produk_id]"]`);
     const namaInput = row.querySelector(`input[name="items[${idx}][nama_item]"]`);
@@ -267,7 +266,7 @@ function onProdukChange(select, idx) {
 
 function hitungTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         const harga = parseFloat(row.querySelector('input[name*="[harga]"]').value) || 0;
         total += qty * harga;
@@ -279,7 +278,6 @@ function addBahanRow(bahanId = '', jumlah = '') {
     const idx = bahanIndex++;
     const div = document.createElement('div');
     div.className = 'bahan-row-form';
-    div.style = 'display:grid; grid-template-columns: 2fr 1fr 40px; gap:12px; margin-bottom:12px; align-items:center;';
     
     let selectHtml = `<select name="bahan[${idx}][bahan_baku_id]" required>${bahanOptions()}</select>`;
     const roundedJumlah = jumlah ? Math.round(parseFloat(jumlah)) : '';
@@ -300,7 +298,7 @@ function addBahanRow(bahanId = '', jumlah = '') {
 
 function isiOtomatisResep() {
     const agregat = {};
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const produkId = row.querySelector('input[name*="[produk_id]"]').value;
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         if (produkId && RESEP[produkId]) {
@@ -339,7 +337,7 @@ if (CURRENT_BAHAN.length > 0) {
 
 document.querySelector('form').addEventListener('submit', function(e) {
     let total = 0;
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-order').forEach(row => {
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         const harga = parseFloat(row.querySelector('input[name*="[harga]"]').value) || 0;
         total += qty * harga;

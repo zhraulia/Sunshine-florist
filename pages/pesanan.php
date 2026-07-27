@@ -60,7 +60,7 @@ unset($_SESSION['flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesanan - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -76,7 +76,7 @@ unset($_SESSION['flash']);
             <!-- ===== FILTER BAR & TOMBOL AKSI PESANAN ===== -->
             <div class="panel" style="margin-bottom:20px; padding:20px 24px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
-                    <div style="display:flex; gap:8px; align-items:center;">
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                         <a href="?status=menunggu&sort=<?= urlencode($sort_filter) ?>&search=<?= urlencode($search_query) ?>" class="btn <?= $status_filter === 'menunggu' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Menunggu</a>
                         <a href="?status=diambil&sort=<?= urlencode($sort_filter) ?>&search=<?= urlencode($search_query) ?>" class="btn <?= $status_filter === 'diambil' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Sudah Diambil</a>
                         <a href="?status=dibatalkan&sort=<?= urlencode($sort_filter) ?>&search=<?= urlencode($search_query) ?>" class="btn <?= $status_filter === 'dibatalkan' ? 'btn-primary' : 'btn-secondary' ?> btn-sm">Dibatalkan</a>
@@ -85,7 +85,7 @@ unset($_SESSION['flash']);
                     <a href="pesanan_tambah.php" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:6px; height:38px;">+ Pesanan Baru</a>
                 </div>
 
-                <form method="GET" style="display:flex; gap:12px; align-items:center; margin-top:16px; padding-top:16px; border-top:1px dashed var(--color-border); flex-wrap:wrap;">
+                <form method="GET" class="filter-form" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--color-border);">
                     <input type="hidden" name="status" value="<?= htmlspecialchars($status_filter) ?>">
                     
                     <div style="flex:1; min-width:200px;">

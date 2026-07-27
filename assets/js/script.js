@@ -34,6 +34,20 @@ function initAll() {
         childList: true,
         subtree: true
     });
+
+    // 4. Automatically wrap all tables inside .panel in a .table-responsive wrapper (only for wide tables with > 4 columns)
+    document.querySelectorAll('.panel table').forEach(function(table) {
+        const firstRow = table.querySelector('tr');
+        const cols = firstRow ? firstRow.querySelectorAll('th, td').length : 0;
+        if (cols > 4) {
+            if (!table.parentElement.classList.contains('table-responsive')) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        }
+    });
 }
 
 // Execute immediately if DOM is ready, otherwise wait for event

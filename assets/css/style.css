@@ -612,7 +612,16 @@ th {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-radius: 8px;
+}
+
+tr th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+tr th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 td {
@@ -658,15 +667,70 @@ tr:last-child td {
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .app-layout { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; position: relative; border-radius: 0 0 24px 24px; }
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        border-radius: 0 0 24px 24px !important;
+        padding: 20px !important;
+    }
+    .sidebar-brand {
+        margin-bottom: 16px !important;
+        justify-content: center !important;
+    }
+    .sidebar-nav {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center !important;
+    }
+    .nav-item {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+    }
+    .nav-logout {
+        margin-top: 0 !important;
+    }
+    .main-content {
+        padding: 24px 20px !important;
+    }
     .panel-grid { grid-template-columns: 1fr; }
     .login-hero-content { flex-direction: column; }
     .login-brand { padding-left: 0; text-align: center; }
     .card-row-1 { grid-template-columns: 1fr; gap: 20px; }
     .card-row-2 { flex-direction: column; align-items: stretch; gap: 20px; }
     .card-row-2 .card { width: 100%; }
+}
+
+@media (max-width: 576px) {
+    /* Stack forms and filters on mobile devices */
+    .panel form {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .panel form .form-group {
+        width: 100% !important;
+    }
+    .panel form > div {
+        width: 100% !important;
+        max-width: none !important;
+    }
+    .panel form .form-group input,
+    .panel form .form-group select,
+    .panel form .ts-wrapper,
+    .panel form input,
+    .panel form select {
+        max-width: none !important;
+        width: 100% !important;
+    }
+    .panel form button,
+    .panel form a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
 }
 
 .badge-menunggu { background: var(--color-warning); color: #7A5A2A; }
@@ -774,4 +838,212 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+/* ===== RESPONSIVE ITEM PESANAN & WALKIN GRID ===== */
+.item-grid-header-order,
+.item-row-form-order {
+    display: grid;
+    grid-template-columns: 1.6fr 1.6fr 60px 100px 100px 100px 36px;
+    gap: 8px;
+    align-items: center;
+}
+
+.item-row-form-walkin {
+    display: grid;
+    grid-template-columns: 2fr 2fr 80px 120px 40px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Mobile-only labels inside dynamic card grids */
+.mobile-label {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .mobile-label {
+        display: block !important;
+        font-size: 11px !important;
+        color: #8E7873 !important;
+        font-weight: 700 !important;
+        margin-bottom: 4px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .item-grid-header-order {
+        display: none !important;
+    }
+    
+    .item-row-form-order,
+    .item-row-form-walkin {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        padding: 16px !important;
+        background: #FAF5F2 !important;
+        border: 2px solid #EADCD9 !important;
+        border-radius: 16px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Child divs of the grid rows */
+    .item-row-form-order > div,
+    .item-row-form-walkin > div {
+        width: 100% !important;
+    }
+    
+    /* Make select, nama_item, and delete button span 2 columns */
+    .item-row-form-order > div:nth-child(1),
+    .item-row-form-order > div:nth-child(2),
+    .item-row-form-order > div:nth-child(7),
+    .item-row-form-walkin > div:nth-child(1),
+    .item-row-form-walkin > div:nth-child(2),
+    .item-row-form-walkin > div:nth-child(5) {
+        grid-column: span 2 !important;
+    }
+    
+    /* Ensure inputs inside wrapper divs scale to full width */
+    .item-row-form-order div select,
+    .item-row-form-order div input,
+    .item-row-form-order div button,
+    .item-row-form-walkin div select,
+    .item-row-form-walkin div input,
+    .item-row-form-walkin div button {
+        width: 100% !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* ===== RESPONSIVE BAHAN ROW (FLEX LAYOUT) ===== */
+.bahan-grid-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+.bahan-grid-header > span:nth-child(1) {
+    flex: 1;
+}
+.bahan-grid-header > span:nth-child(2) {
+    width: 100px;
+    text-align: left;
+}
+.bahan-grid-header > span:nth-child(3) {
+    width: 36px;
+}
+
+.bahan-row-form {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+    width: 100% !important;
+}
+
+/* Force TomSelect dropdown wrapper to stretch and fill all space */
+.bahan-row-form > select,
+.bahan-row-form > .ts-wrapper {
+    flex: 1 !important;
+    min-width: 120px !important;
+    max-width: none !important;
+}
+
+/* Force quantity input to stay at a clean fixed width */
+.bahan-row-form > input[type="number"] {
+    width: 100px !important;
+    max-width: 100px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Force delete button to stay at a fixed size */
+.bahan-row-form > button {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .bahan-grid-header {
+        display: none !important;
+    }
+    .bahan-row-form > input[type="number"] {
+        width: 80px !important;
+        max-width: 80px !important;
+    }
+}
+
+/* ===== PANEL PADDING & WIDTH OVERRIDES ON MOBILE ===== */
+@media (max-width: 768px) {
+    .panel {
+        padding: 16px !important;
+        border-radius: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .main-content {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* ===== TABLE RESPONSIVE WRAPPER ===== */
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin-bottom: 15px !important;
+}
+.table-responsive table {
+    min-width: 800px !important;
+    width: 100% !important;
+}
+
+/* ===== FILTER BAR & FORMS RESPONSIVENESS ===== */
+.filter-form {
+    display: flex !important;
+    gap: 20px !important;
+    align-items: flex-end !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+}
+
+.filter-form .form-group,
+.filter-form > div {
+    margin-bottom: 0 !important;
+    flex: 1 1 200px !important;
+    min-width: 170px !important;
+}
+
+.filter-form > div[style*="display:flex"],
+.filter-form > div[style*="display: flex"] {
+    flex: 0 1 auto !important;
+    min-width: auto !important;
+}
+
+.filter-form .btn,
+.filter-form button,
+.filter-form a.btn {
+    height: 42px !important;
+    line-height: 42px !important;
+    padding: 0 16px !important;
+    margin-bottom: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    font-weight: 700 !important;
 }

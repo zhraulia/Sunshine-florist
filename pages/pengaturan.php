@@ -18,7 +18,7 @@ unset($_SESSION['flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengaturan - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -91,6 +91,15 @@ unset($_SESSION['flash']);
                     </div>
                     <button type="submit" class="btn btn-primary">Ganti Password</button>
                 </form>
+            </div>
+
+            <!-- ===== UPDATE SISTEM & DATABASE ===== -->
+            <div class="panel" style="max-width:600px; margin-top:20px; border:1px solid #EADCD9;">
+                <h3>Update Sistem & Database</h3>
+                <p style="color:var(--color-text-muted); font-size:13px; margin-bottom:14px; line-height:1.5;">
+                    Gunakan tombol di bawah ini untuk menyelaraskan struktur tabel database dan memproses migrasi data setelah melakukan deploy atau mengunggah pembaruan sistem baru.
+                </p>
+                <a href="run_migration.php" class="btn btn-secondary" style="font-weight:700;">Jalankan Sinkronisasi Database</a>
             </div>
 
             <?php include __DIR__ . '/../includes/footer.php'; ?>

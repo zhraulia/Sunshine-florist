@@ -28,7 +28,7 @@ unset($_SESSION['flash']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jual Langsung - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css">
 </head>
 <body>
     <div class="app-layout">
@@ -125,21 +125,20 @@ function bahanOptions() {
 function addItemRow() {
     const idx = itemIndex++;
     const div = document.createElement('div');
-    div.className = 'item-row-form';
-    div.style = 'display:grid; grid-template-columns: 2fr 2fr 80px 120px 40px; gap:8px; margin-bottom:10px; align-items:center;';
+    div.className = 'item-row-form-walkin';
     div.innerHTML = `
-        <select onchange="onProdukChange(this, ${idx})">${produkOptions()}</select>
-        <input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" required>
-        <input type="number" name="items[${idx}][qty]" value="1" min="1" onchange="hitungTotal()">
-        <input type="number" name="items[${idx}][harga]" placeholder="Harga" onchange="hitungTotal()">
-        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); hitungTotal();">✖</button>
+        <div><select onchange="onProdukChange(this, ${idx})">${produkOptions()}</select></div>
+        <div><input type="text" name="items[${idx}][nama_item]" placeholder="Nama item" required></div>
+        <div><label class="mobile-label">Qty</label><input type="number" name="items[${idx}][qty]" value="1" min="1" onchange="hitungTotal()"></div>
+        <div><label class="mobile-label">Harga</label><input type="number" name="items[${idx}][harga]" placeholder="Harga" onchange="hitungTotal()"></div>
+        <div><button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove(); hitungTotal();">✖</button></div>
         <input type="hidden" name="items[${idx}][produk_id]" value="">
     `;
     document.getElementById('items-container').appendChild(div);
 }
 
 function onProdukChange(select, idx) {
-    const row = select.closest('.item-row-form');
+    const row = select.closest('.item-row-form-walkin');
     const opt = select.selectedOptions[0];
     const produkIdInput = row.querySelector(`input[name="items[${idx}][produk_id]"]`);
     const namaInput = row.querySelector(`input[name="items[${idx}][nama_item]"]`);
@@ -159,7 +158,7 @@ function onProdukChange(select, idx) {
 
 function hitungTotal() {
     let total = 0;
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-walkin').forEach(row => {
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         const harga = parseFloat(row.querySelector('input[name*="[harga]"]').value) || 0;
         total += qty * harga;
@@ -171,7 +170,6 @@ function addBahanRow(bahanId = '', jumlah = '') {
     const idx = bahanIndex++;
     const div = document.createElement('div');
     div.className = 'bahan-row-form';
-    div.style = 'display:grid; grid-template-columns: 2fr 1fr 40px; gap:12px; margin-bottom:12px; align-items:center;';
     
     // Populate select HTML directly with options
     let selectHtml = `<select name="bahan[${idx}][bahan_baku_id]" required>${bahanOptions()}</select>`;
@@ -195,7 +193,7 @@ function addBahanRow(bahanId = '', jumlah = '') {
 
 function isiOtomatisResep() {
     const agregat = {};
-    document.querySelectorAll('#items-container .item-row-form').forEach(row => {
+    document.querySelectorAll('#items-container .item-row-form-walkin').forEach(row => {
         const produkId = row.querySelector('input[name*="[produk_id]"]').value;
         const qty = parseFloat(row.querySelector('input[name*="[qty]"]').value) || 0;
         if (produkId && RESEP[produkId]) {
