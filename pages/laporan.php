@@ -207,11 +207,12 @@ foreach ($stmt_ops->fetchAll() as $row) {
 $stmt_ongkir = $pdo->prepare("
     SELECT COALESCE(SUM(biaya_ongkir), 0)
     FROM riwayat_stok
-    WHERE jenis = 'masuk' AND status_po = 'lunas' AND DATE(created_at) BETWEEN ? AND ?
+    WHERE jenis = 'masuk' AND status_po IN ('lunas', 'selesai_po') AND DATE(created_at) BETWEEN ? AND ?
 ");
 $stmt_ongkir->execute([$awal, $akhir]);
 $total_ongkir_belanja = (float)$stmt_ongkir->fetchColumn();
 $biaya_operasional_riil += $total_ongkir_belanja;
+
 
 if ($tab === 'labarugi') {
     // 1. Cek snapshot bulan ini
@@ -228,7 +229,7 @@ if ($tab === 'labarugi') {
     $stmt_belanja = $pdo->prepare("
         SELECT COALESCE(SUM(total_biaya - biaya_ongkir), 0) 
         FROM riwayat_stok 
-        WHERE jenis = 'masuk' AND status_po = 'lunas' AND DATE(created_at) BETWEEN ? AND ?
+        WHERE jenis = 'masuk' AND status_po IN ('lunas', 'selesai_po') AND DATE(created_at) BETWEEN ? AND ?
     ");
     $stmt_belanja->execute([$awal, $akhir]);
     $belanja_bahan = (float)$stmt_belanja->fetchColumn();
