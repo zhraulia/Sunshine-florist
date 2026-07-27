@@ -17,19 +17,27 @@ $search_query = $_GET['search'] ?? '';
 
 if ($search_query !== '') {
     $stmt = $pdo->prepare("
-        SELECT p.*, k.nama AS nama_kategori
+        SELECT p.*, k.nama AS nama_kategori,
+               COALESCE(SUM(rp.jumlah_dibutuhkan * b.harga_beli), 0) AS total_modal_bahan
         FROM produk p
         LEFT JOIN kategori_produk k ON k.id = p.kategori_id
+        LEFT JOIN resep_produk rp ON rp.produk_id = p.id
+        LEFT JOIN bahan_baku b ON b.id = rp.bahan_baku_id
         WHERE p.nama LIKE ? OR k.nama LIKE ?
+        GROUP BY p.id
         ORDER BY p.nama ASC
     ");
     $stmt->execute(['%' . $search_query . '%', '%' . $search_query . '%']);
     $produk_list = $stmt->fetchAll();
 } else {
     $produk_list = $pdo->query("
-        SELECT p.*, k.nama AS nama_kategori
+        SELECT p.*, k.nama AS nama_kategori,
+               COALESCE(SUM(rp.jumlah_dibutuhkan * b.harga_beli), 0) AS total_modal_bahan
         FROM produk p
         LEFT JOIN kategori_produk k ON k.id = p.kategori_id
+        LEFT JOIN resep_produk rp ON rp.produk_id = p.id
+        LEFT JOIN bahan_baku b ON b.id = rp.bahan_baku_id
+        GROUP BY p.id
         ORDER BY p.nama ASC
     ")->fetchAll();
 }
@@ -49,7 +57,7 @@ if ($lihat_resep_id) {
     $produk_resep = $stmt->fetch();
 
     $stmt = $pdo->prepare("
-        SELECT rp.*, b.nama AS nama_bahan, b.satuan_dasar
+        SELECT rp.*, b.nama AS nama_bahan, b.satuan_dasar, b.harga_beli AS harga_satuan
         FROM resep_produk rp
         JOIN bahan_baku b ON b.id = rp.bahan_baku_id
         WHERE rp.produk_id = ?
@@ -83,13 +91,28 @@ if ($lihat_resep_id) {
                 <div class="panel" style="margin-bottom:24px;">
                     <h3>Resep: <?= htmlspecialchars($produk_resep['nama']) ?></h3>
 
+                    <?php $total_modal_bahan = 0; ?>
                     <table style="margin-bottom:16px;">
-                        <thead><tr><th>Bahan</th><th>Jumlah Dibutuhkan</th><th></th></tr></thead>
-                        <tbody>
-                            <?php foreach ($resep_items as $r): ?>
+                        <thead>
                             <tr>
-                                <td><?= htmlspecialchars($r['nama_bahan']) ?></td>
-                                <td><?= (float)$r['jumlah_dibutuhkan'] ?> <?= htmlspecialchars($r['satuan_dasar']) ?></td>
+                                <th>Bahan</th>
+                                <th style="text-align:right;">Harga Satuan</th>
+                                <th style="text-align:center;">Jumlah Dibutuhkan</th>
+                                <th style="text-align:right;">Sub-Total Modal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($resep_items as $r): 
+                                $cost_per_unit = (float)$r['harga_satuan'];
+                                $subtotal_cost = (float)$r['jumlah_dibutuhkan'] * $cost_per_unit;
+                                $total_modal_bahan += $subtotal_cost;
+                            ?>
+                            <tr>
+                                <td><strong><?= htmlspecialchars($r['nama_bahan']) ?></strong></td>
+                                <td style="text-align:right; color:var(--color-text-muted);">Rp<?= number_format($cost_per_unit, 0, ',', '.') ?> / <?= htmlspecialchars($r['satuan_dasar']) ?></td>
+                                <td style="text-align:center;"><?= (float)$r['jumlah_dibutuhkan'] ?> <?= htmlspecialchars($r['satuan_dasar']) ?></td>
+                                <td style="text-align:right; font-weight:600; color:var(--color-text-dark);">Rp<?= number_format($subtotal_cost, 0, ',', '.') ?></td>
                                 <td>
                                     <a href="../actions/hapus_resep.php?id=<?= $r['id'] ?>&produk_id=<?= $lihat_resep_id ?>"
                                        class="btn btn-danger btn-sm" data-confirm="Hapus bahan ini dari resep?">Hapus</a>
@@ -97,10 +120,46 @@ if ($lihat_resep_id) {
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($resep_items)): ?>
-                            <tr><td colspan="3" style="color:var(--color-text-muted);">Belum ada bahan di resep ini.</td></tr>
+                            <tr><td colspan="5" style="text-align:center; color:var(--color-text-muted);">Belum ada bahan di resep ini.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
+
+                    <!-- ===== BREAKDOWN MODAL & PROFIT ===== -->
+                    <div style="background:#FAF0EC; border-radius:12px; padding:16px; margin-bottom:20px; border:1px solid #EADCD9;">
+                        <h4 style="margin-top:0; margin-bottom:12px; color:var(--color-primary);">Breakdown Modal & Estimasi Profit</h4>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+                            <div>
+                                <div style="font-size:12px; color:var(--color-text-muted);">Total Modal Bahan Baku (Resep)</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--color-text-dark);">Rp<?= number_format($total_modal_bahan, 0, ',', '.') ?></div>
+                            </div>
+                            <div>
+                                <div style="font-size:12px; color:var(--color-text-muted);">Biaya Operasional Produk</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--color-text-muted);">Rp<?= number_format($produk_resep['biaya_operasional'], 0, ',', '.') ?></div>
+                            </div>
+                            <div>
+                                <div style="font-size:12px; color:var(--color-text-muted);">Biaya Jasa Rangkai (Upah)</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--color-text-muted);">Rp<?= number_format($produk_resep['biaya_jasa'], 0, ',', '.') ?></div>
+                            </div>
+                            <?php 
+                            $total_hpp_produk = $total_modal_bahan + (float)$produk_resep['biaya_operasional'] + (float)$produk_resep['biaya_jasa'];
+                            $harga_jual = (float)$produk_resep['harga_jual'];
+                            $estimasi_profit = $harga_jual - $total_hpp_produk;
+                            ?>
+                            <div>
+                                <div style="font-size:12px; color:var(--color-primary); font-weight:700;">TOTAL HPP PRODUK (MODAL)</div>
+                                <div style="font-size:18px; font-weight:800; color:var(--color-primary);">Rp<?= number_format($total_hpp_produk, 0, ',', '.') ?></div>
+                            </div>
+                            <div>
+                                <div style="font-size:12px; color:var(--color-text-muted);">Harga Jual Produk</div>
+                                <div style="font-size:18px; font-weight:700; color:var(--color-text-dark);">Rp<?= number_format($harga_jual, 0, ',', '.') ?></div>
+                            </div>
+                            <div>
+                                <div style="font-size:12px; color:var(--color-success); font-weight:700;">ESTIMASI UNTUNG KOTOR</div>
+                                <div style="font-size:18px; font-weight:800; color:var(--color-success);">Rp<?= number_format($estimasi_profit, 0, ',', '.') ?></div>
+                            </div>
+                        </div>
+                    </div>
 
                     <form action="../actions/simpan_resep.php" method="POST" style="display:flex; gap:10px; align-items:end;">
                         <input type="hidden" name="produk_id" value="<?= $lihat_resep_id ?>">
@@ -225,8 +284,8 @@ if ($lihat_resep_id) {
                                 <th>Foto</th>
                                 <th>Nama</th>
                                 <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Modal Tambahan</th>
+                                <th>Harga Jual</th>
+                                <th>Estimasi Modal (HPP)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -242,10 +301,17 @@ if ($lihat_resep_id) {
                                 </td>
                                 <td><strong><?= htmlspecialchars($p['nama']) ?></strong></td>
                                 <td><?= htmlspecialchars($p['nama_kategori'] ?? '-') ?></td>
-                                <td>Rp<?= number_format($p['harga_jual'], 0, ',', '.') ?></td>
-                                <td style="font-size:12px; color:var(--color-text-muted);">
+                                <td><strong>Rp<?= number_format($p['harga_jual'], 0, ',', '.') ?></strong></td>
+                                <td style="font-size:12px; color:var(--color-text-muted); line-height:1.4;">
+                                    Bahan: Rp<?= number_format($p['total_modal_bahan'], 0, ',', '.') ?><br>
                                     Ops: Rp<?= number_format($p['biaya_operasional'], 0, ',', '.') ?><br>
-                                    Jasa: Rp<?= number_format($p['biaya_jasa'], 0, ',', '.') ?>
+                                    Jasa: Rp<?= number_format($p['biaya_jasa'], 0, ',', '.') ?><br>
+                                    <?php 
+                                    $total_hpp = (float)$p['total_modal_bahan'] + (float)$p['biaya_operasional'] + (float)$p['biaya_jasa'];
+                                    $profit = (float)$p['harga_jual'] - $total_hpp;
+                                    ?>
+                                    <strong style="color:var(--color-primary);">Total HPP: Rp<?= number_format($total_hpp, 0, ',', '.') ?></strong><br>
+                                    <span class="badge badge-success" style="font-size:10px; padding:2px 6px; display:inline-block; margin-top:4px; font-weight:700;">Untung: Rp<?= number_format($profit, 0, ',', '.') ?></span>
                                 </td>                                
                                 <td style="white-space:nowrap;">
                                     <a href="produk_resep.php?resep=<?= $p['id'] ?>" class="btn btn-primary btn-sm">Resep</a>
