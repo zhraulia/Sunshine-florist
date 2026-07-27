@@ -41,6 +41,7 @@ if ($search_query !== '') {
         ORDER BY p.nama ASC
     ")->fetchAll();
 }
+
 $kategori_list = $pdo->query("SELECT * FROM kategori_produk ORDER BY nama ASC")->fetchAll();
 $bahan_semua = $pdo->query("SELECT * FROM bahan_baku ORDER BY nama ASC")->fetchAll();
 
