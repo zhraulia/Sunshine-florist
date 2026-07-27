@@ -211,13 +211,11 @@ if ($lihat_resep_id) {
                 <div class="panel">
                     <h3>Daftar Produk</h3>
                     
-                    <form method="GET" class="filter-form" style="margin-bottom:20px;">
-                        <div style="flex:1; min-width:200px;">
-                            <input type="text" name="search" value="<?= htmlspecialchars($search_query) ?>" placeholder="Cari nama produk atau kategori...">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+                    <form method="GET" style="display:flex; gap:10px; align-items:center; margin-bottom:20px; width:100%; max-width:500px;">
+                        <input type="text" name="search" value="<?= htmlspecialchars($search_query) ?>" placeholder="Cari nama produk atau kategori..." style="flex:1; padding:10px 12px; border:1px solid #E0D5D6; border-radius:8px; height:42px; box-sizing:border-box;">
+                        <button type="submit" class="btn btn-primary" style="height:42px; padding:0 16px; margin:0; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; font-weight:700;">Cari</button>
                         <?php if ($search_query !== ''): ?>
-                            <a href="produk_resep.php" class="btn btn-secondary btn-sm">Reset</a>
+                            <a href="produk_resep.php" class="btn btn-secondary" style="height:42px; padding:0 16px; margin:0; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; text-decoration:none;">Reset</a>
                         <?php endif; ?>
                     </form>
 
