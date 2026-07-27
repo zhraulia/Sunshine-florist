@@ -1014,7 +1014,7 @@ input[type=number] {
 /* ===== FILTER BAR & FORMS RESPONSIVENESS ===== */
 .filter-form {
     display: flex !important;
-    gap: 20px !important;
+    gap: 24px !important;
     align-items: flex-end !important;
     flex-wrap: wrap !important;
     width: 100% !important;
@@ -1023,8 +1023,17 @@ input[type=number] {
 .filter-form .form-group,
 .filter-form > div {
     margin-bottom: 0 !important;
-    flex: 1 1 200px !important;
-    min-width: 170px !important;
+    flex: 1 1 220px !important;
+    min-width: 180px !important;
+}
+
+.filter-form .form-group input,
+.filter-form .form-group select,
+.filter-form > div input,
+.filter-form > div select {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
 }
 
 .filter-form > div[style*="display:flex"],

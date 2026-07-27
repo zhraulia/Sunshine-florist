@@ -1027,6 +1027,15 @@ input[type=number] {
     min-width: 180px !important;
 }
 
+.filter-form .form-group input,
+.filter-form .form-group select,
+.filter-form > div input,
+.filter-form > div select {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
 .filter-form > div[style*="display:flex"],
 .filter-form > div[style*="display: flex"] {
     flex: 0 1 auto !important;
