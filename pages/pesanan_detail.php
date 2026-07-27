@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pesanan - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
     <link rel="stylesheet" href="../assets/css/style_v2.css">
