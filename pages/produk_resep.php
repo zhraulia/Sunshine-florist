@@ -13,12 +13,26 @@ if (!empty($_GET['edit'])) {
     $edit_data = $stmt->fetch();
 }
 
-$produk_list = $pdo->query("
-    SELECT p.*, k.nama AS nama_kategori
-    FROM produk p
-    LEFT JOIN kategori_produk k ON k.id = p.kategori_id
-    ORDER BY p.nama ASC
-")->fetchAll();
+$search_query = $_GET['search'] ?? '';
+
+if ($search_query !== '') {
+    $stmt = $pdo->prepare("
+        SELECT p.*, k.nama AS nama_kategori
+        FROM produk p
+        LEFT JOIN kategori_produk k ON k.id = p.kategori_id
+        WHERE p.nama LIKE ? OR k.nama LIKE ?
+        ORDER BY p.nama ASC
+    ");
+    $stmt->execute(['%' . $search_query . '%', '%' . $search_query . '%']);
+    $produk_list = $stmt->fetchAll();
+} else {
+    $produk_list = $pdo->query("
+        SELECT p.*, k.nama AS nama_kategori
+        FROM produk p
+        LEFT JOIN kategori_produk k ON k.id = p.kategori_id
+        ORDER BY p.nama ASC
+    ")->fetchAll();
+}
 $kategori_list = $pdo->query("SELECT * FROM kategori_produk ORDER BY nama ASC")->fetchAll();
 $bahan_semua = $pdo->query("SELECT * FROM bahan_baku ORDER BY nama ASC")->fetchAll();
 
@@ -196,6 +210,17 @@ if ($lihat_resep_id) {
                 <!-- ================= DAFTAR PRODUK ================= -->
                 <div class="panel">
                     <h3>Daftar Produk</h3>
+                    
+                    <form method="GET" class="filter-form" style="margin-bottom:20px;">
+                        <div style="flex:1; min-width:200px;">
+                            <input type="text" name="search" value="<?= htmlspecialchars($search_query) ?>" placeholder="Cari nama produk atau kategori...">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+                        <?php if ($search_query !== ''): ?>
+                            <a href="produk_resep.php" class="btn btn-secondary btn-sm">Reset</a>
+                        <?php endif; ?>
+                    </form>
+
                     <table>
                         <thead>
                             <tr>
@@ -234,7 +259,11 @@ if ($lihat_resep_id) {
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($produk_list)): ?>
-                            <tr><td colspan="7" style="text-align:center; color:var(--color-text-muted);">Belum ada produk.</td></tr>
+                            <tr>
+                                <td colspan="7" style="text-align:center; color:var(--color-text-muted);">
+                                    <?= $search_query !== '' ? 'Tidak ada produk yang cocok dengan pencarian.' : 'Belum ada produk.' ?>
+                                </td>
+                            </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
