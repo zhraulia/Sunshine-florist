@@ -194,4 +194,27 @@ $konversi_list = $stmt->fetchAll();
                 </form>
             </div>
 
+            <script>
+            function updateRestockLabels() {
+                const select = document.getElementById('satuan_pilihan');
+                const selectedOpt = select.options[select.selectedIndex];
+                const unitName = selectedOpt.getAttribute('data-nama');
+                
+                const labelJumlah = document.getElementById('label_jumlah_beli');
+                const labelHarga = document.getElementById('label_harga_total');
+                
+                if (labelJumlah) {
+                    labelJumlah.innerHTML = `Jumlah Beli (dalam <strong>${unitName}</strong>)`;
+                }
+                if (labelHarga) {
+                    labelHarga.innerHTML = `Harga Total Bahan (per <strong>${unitName}</strong> / Total)`;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize label on load
+                updateRestockLabels();
+            });
+            </script>
+
             <?php include __DIR__ . '/../includes/footer.php'; ?>

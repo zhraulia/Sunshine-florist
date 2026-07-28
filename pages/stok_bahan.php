@@ -339,6 +339,7 @@ unset($_SESSION['flash']);
                             <td>Rp<?= number_format($b['harga_beli'], 0, ',', '.') ?></td>
                             <td style="white-space:nowrap;">
                                 <a href="tambah_stok.php?bahan_id=<?= $b['id'] ?>" class="btn btn-primary btn-sm">+ Stok</a>
+                                <a href="kurangi_stok.php?bahan_id=<?= $b['id'] ?>" class="btn btn-danger btn-sm" style="background:#A43B22; border-color:#A43B22;">- Kurang</a>
                                 <a href="stok_bahan.php?edit=<?= $b['id'] ?>" class="btn btn-secondary btn-sm">Edit</a>
                                 <a href="../actions/hapus_bahan.php?id=<?= $b['id'] ?>"
                                    class="btn btn-danger btn-sm"
