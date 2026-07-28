@@ -338,13 +338,30 @@ unset($_SESSION['flash']);
                             <td><?= (float)$b['ambang_minimum'] ?></td>
                             <td>Rp<?= number_format($b['harga_beli'], 0, ',', '.') ?></td>
                             <td style="white-space:nowrap;">
-                                <a href="tambah_stok.php?bahan_id=<?= $b['id'] ?>" class="btn btn-primary btn-sm">+ Stok</a>
-                                <a href="kurangi_stok.php?bahan_id=<?= $b['id'] ?>" class="btn btn-danger btn-sm" style="background:#A43B22; border-color:#A43B22;">- Kurang</a>
-                                <a href="stok_bahan.php?edit=<?= $b['id'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                                <a href="tambah_stok.php?bahan_id=<?= $b['id'] ?>" 
+                                   class="btn btn-primary btn-sm" 
+                                   title="Tambah Stok" 
+                                   style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border-radius:8px; margin-right:4px; vertical-align:middle;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </a>
+                                <a href="kurangi_stok.php?bahan_id=<?= $b['id'] ?>" 
+                                   class="btn btn-danger btn-sm" 
+                                   title="Kurangi Stok" 
+                                   style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border-radius:8px; margin-right:4px; vertical-align:middle; background:#A43B22; border-color:#A43B22;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </a>
+                                <a href="stok_bahan.php?edit=<?= $b['id'] ?>" 
+                                   class="btn btn-secondary btn-sm" 
+                                   title="Edit Bahan" 
+                                   style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border-radius:8px; margin-right:4px; vertical-align:middle;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
                                 <a href="../actions/hapus_bahan.php?id=<?= $b['id'] ?>"
                                    class="btn btn-danger btn-sm"
-                                   data-confirm="Hapus bahan '<?= htmlspecialchars($b['nama']) ?>'? Data resep yang memakai bahan ini juga akan terhapus.">
-                                   Hapus
+                                   title="Hapus Bahan"
+                                   data-confirm="Hapus bahan '<?= htmlspecialchars($b['nama']) ?>'? Data resep yang memakai bahan ini juga akan terhapus."
+                                   style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border-radius:8px; vertical-align:middle;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                 </a>
                             </td>
                         </tr>
