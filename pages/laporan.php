@@ -241,7 +241,7 @@ if ($tab === 'labarugi') {
         FROM riwayat_stok r
         JOIN bahan_baku b ON b.id = r.bahan_baku_id
         WHERE r.jenis = 'keluar'
-          AND (r.keterangan LIKE 'Pengurangan stok:%' OR r.keterangan = 'Penyesuaian stok fisik (pengurangan)')
+          AND (r.keterangan LIKE 'Pengurangan stok%' OR r.keterangan = 'Penyesuaian stok fisik (pengurangan)')
           AND DATE(r.created_at) BETWEEN ? AND ?
     ");
     $stmt_rusak->execute([$awal, $akhir]);

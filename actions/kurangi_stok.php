@@ -40,12 +40,7 @@ if (str_starts_with($satuan_pilihan, 'master:')) {
     }
 }
 
-// Default keterangan jika kosong
-if ($keterangan === '') {
-    $keterangan = 'Penyesuaian stok fisik (pengurangan)';
-} else {
-    $keterangan = 'Pengurangan stok: ' . $keterangan;
-}
+$keterangan = 'Pengurangan stok';
 
 $pdo->beginTransaction();
 try {

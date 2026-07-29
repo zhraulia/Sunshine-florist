@@ -79,11 +79,6 @@ $konversi_list = $stmt->fetchAll();
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Alasan Pengurangan (opsional)</label>
-                        <input type="text" name="keterangan" placeholder="misal: Bunga layu / patah / penyesuaian">
-                    </div>
-
                     <button type="submit" class="btn btn-danger" style="background:#A43B22; border-color:#A43B22;">- Simpan Pengurangan Stok</button>
                     <a href="stok_bahan.php" class="btn btn-secondary">Batal</a>
                 </form>
