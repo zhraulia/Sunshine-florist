@@ -181,6 +181,7 @@ $biaya_operasional_riil = 0;
 $ops_breakdown    = [];
 $total_ongkir_belanja = 0;
 $untung_bersih    = 0;
+$total_kerugian_bahan = 0;
 
 $total_buket_laku = 0;
 $target_anggaran_ops = 0;
@@ -233,6 +234,18 @@ if ($tab === 'labarugi') {
     ");
     $stmt_belanja->execute([$awal, $akhir]);
     $belanja_bahan = (float)$stmt_belanja->fetchColumn();
+
+    // 3.5 Hitung Kerugian Bahan Baku (Rusak/Pecah/Layu) dari Riwayat Stok Keluar Penyesuaian
+    $stmt_rusak = $pdo->prepare("
+        SELECT COALESCE(SUM(r.jumlah * b.harga_beli), 0)
+        FROM riwayat_stok r
+        JOIN bahan_baku b ON b.id = r.bahan_baku_id
+        WHERE r.jenis = 'keluar'
+          AND (r.keterangan LIKE 'Pengurangan stok:%' OR r.keterangan = 'Penyesuaian stok fisik (pengurangan)')
+          AND DATE(r.created_at) BETWEEN ? AND ?
+    ");
+    $stmt_rusak->execute([$awal, $akhir]);
+    $total_kerugian_bahan = (float)$stmt_rusak->fetchColumn();
 
     // 4. Hitung HPP & Untung Kotor
     $hpp = $persediaan_awal + $belanja_bahan - $persediaan_akhir;
@@ -569,6 +582,16 @@ if ($tab === 'labarugi') {
                                 <td style="padding:6px 0 6px 16px;">(-) Persediaan Akhir Bahan Baku (Sisa di Gudang)</td>
                                 <td style="text-align:right; padding:6px 0; color:#A43B22;">(Rp<?= number_format($persediaan_akhir, 0, ',', '.') ?>)</td>
                             </tr>
+                            <?php if ($total_kerugian_bahan > 0): ?>
+                            <tr style="color:var(--color-text-muted); font-weight:600; font-style: italic;">
+                                <td style="padding:6px 0 6px 32px; color:var(--color-primary);">└─ Termasuk Kerugian Bahan Rusak / Buang</td>
+                                <td style="text-align:right; padding:6px 0; color:var(--color-primary);">Rp<?= number_format($total_kerugian_bahan, 0, ',', '.') ?></td>
+                            </tr>
+                            <tr style="color:var(--color-text-muted); font-weight:600; font-style: italic;">
+                                <td style="padding:6px 0 6px 32px;">└─ Modal Bahan Murni Terjual (HPP Normal)</td>
+                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format(max(0, $hpp - $total_kerugian_bahan), 0, ',', '.') ?></td>
+                            </tr>
+                            <?php endif; ?>
                             <tr style="font-weight:700; color:var(--color-text-dark);">
                                 <td style="padding:6px 0 6px 16px; border-top:1px dashed #EADCD9;">Sub-Total Modal Fisik Bahan Baku</td>
                                 <td style="text-align:right; padding:6px 0; border-top:1px dashed #EADCD9;">Rp<?= number_format($hpp, 0, ',', '.') ?></td>
