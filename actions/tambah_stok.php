@@ -43,18 +43,30 @@ if (str_starts_with($satuan_pilihan, 'master:')) {
     }
 }
 
-$total_biaya = $harga_total + $biaya_ongkir;
+$is_saldo_awal = isset($_POST['is_saldo_awal']);
+
+if ($is_saldo_awal) {
+    $total_biaya = 0;
+    $biaya_ongkir = 0;
+    $metode_pembayaran = null;
+    $status_po = 'saldo_awal';
+    if (empty($keterangan)) {
+        $keterangan = 'Saldo Awal Toko';
+    }
+} else {
+    $total_biaya = $harga_total + $biaya_ongkir;
+}
 
 $pdo->beginTransaction();
 try {
-    // Jika LUNAS: Tambah stok fisik sekarang
-    if ($status_po === 'lunas') {
+    // Jika LUNAS atau SALDO AWAL: Tambah stok fisik sekarang
+    if ($status_po === 'lunas' || $status_po === 'saldo_awal') {
         $stmt = $pdo->prepare("UPDATE bahan_baku SET stok_fisik = stok_fisik + ? WHERE id = ?");
         $stmt->execute([$jumlah_dasar, $bahan_baku_id]);
     }
 
-    // Update harga beli dengan metode rata-rata tertimbang (Weighted Average Cost)
-    if ($harga_total > 0 && $jumlah_dasar > 0) {
+    // Update harga beli dengan metode rata-rata tertimbang (HANYA untuk pembelian biasa)
+    if (!$is_saldo_awal && $harga_total > 0 && $jumlah_dasar > 0) {
         $stmt_cur = $pdo->prepare("SELECT stok_fisik, harga_beli FROM bahan_baku WHERE id = ?");
         $stmt_cur->execute([$bahan_baku_id]);
         $bhn = $stmt_cur->fetch();
@@ -84,6 +96,8 @@ try {
 
     if ($status_po === 'pending_po') {
         $_SESSION['flash'] = ['type' => 'success', 'message' => "Belanja PO berhasil dicatat (Uang keluar: Rp" . number_format($total_biaya, 0, ',', '.') . "). Barang akan masuk stok fisik setelah dikonfirmasi diterima."];
+    } elseif ($status_po === 'saldo_awal') {
+        $_SESSION['flash'] = ['type' => 'success', 'message' => "Saldo awal berhasil ditambahkan (+{$jumlah_dasar}). Tidak ada kas yang berkurang."];
     } else {
         $_SESSION['flash'] = ['type' => 'success', 'message' => "Stok berhasil ditambahkan (+{$jumlah_dasar}). Total biaya: Rp" . number_format($total_biaya, 0, ',', '.')];
     }

@@ -106,37 +106,47 @@ $konversi_list = $stmt->fetchAll();
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: 1 / -1; margin-top: 10px; margin-bottom: 5px;">
+                        <label style="font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; color:var(--color-primary);">
+                            <input type="checkbox" name="is_saldo_awal" id="is_saldo_awal" value="1" onchange="toggleRestockPaymentFields()">
+                            <span>Catat sebagai Saldo Awal (Tidak memotong kas)</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="group_harga_total">
                         <label id="label_harga_total">Harga Total Bahan (Rp)</label>
                         <input type="number" name="harga_total" placeholder="0" required style="max-width:100%;">
                     </div>
 
-                    <div class="form-group">
-                        <label>Biaya Ongkir (Rp)</label>
-                        <input type="number" name="biaya_ongkir" placeholder="0" value="0" style="max-width:100%;">
-                    </div>
+                    <!-- Container untuk field pembayaran yang bisa disembunyikan -->
+                    <div id="restock_payment_fields" style="display:contents;">
+                        <div class="form-group">
+                            <label>Biaya Ongkir (Rp)</label>
+                            <input type="number" name="biaya_ongkir" id="biaya_ongkir" placeholder="0" value="0" style="max-width:100%;">
+                        </div>
 
-                    <div class="form-group">
-                        <label>Metode Pembayaran</label>
-                        <select name="metode_pembayaran" required>
-                            <option value="cash">Cash (Tunai)</option>
-                            <option value="bri">Bank BRI</option>
-                            <option value="seabank">SeaBank</option>
-                            <option value="dana">DANA</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label>Metode Pembayaran</label>
+                            <select name="metode_pembayaran" id="metode_pembayaran">
+                                <option value="cash">Cash (Tunai)</option>
+                                <option value="bri">Bank BRI</option>
+                                <option value="seabank">SeaBank</option>
+                                <option value="dana">DANA</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Status Pembayaran & Barang</label>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
-                            <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                                <input type="radio" name="status_po" value="lunas" checked>
-                                <span><strong>Lunas</strong> (Uang keluar & barang langsung masuk stok)</span>
-                            </label>
-                            <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                                <input type="radio" name="status_po" value="pending_po">
-                                <span><strong>Belanja PO</strong> (Uang keluar duluan, barang belum sampai)</span>
-                            </label>
+                        <div class="form-group">
+                            <label>Status Pembayaran & Barang</label>
+                            <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                                <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                    <input type="radio" name="status_po" value="lunas" checked>
+                                    <span><strong>Lunas</strong> (Uang keluar & barang langsung masuk stok)</span>
+                                </label>
+                                <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                    <input type="radio" name="status_po" value="pending_po">
+                                    <span><strong>Belanja PO</strong> (Uang keluar duluan, barang belum sampai)</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -211,9 +221,32 @@ $konversi_list = $stmt->fetchAll();
                 }
             }
 
+            function toggleRestockPaymentFields() {
+                const isSaldoAwal = document.getElementById('is_saldo_awal') && document.getElementById('is_saldo_awal').checked;
+                const groupHarga = document.getElementById('group_harga_total');
+                const paymentFields = document.getElementById('restock_payment_fields');
+                
+                if (isSaldoAwal) {
+                    if (groupHarga) groupHarga.style.display = 'none';
+                    if (paymentFields) paymentFields.style.display = 'none';
+                    if (document.querySelector('input[name="harga_total"]')) {
+                        document.querySelector('input[name="harga_total"]').value = 0;
+                    }
+                    if (document.getElementById('biaya_ongkir')) {
+                        document.getElementById('biaya_ongkir').value = 0;
+                    }
+                } else {
+                    if (groupHarga) groupHarga.style.display = 'block';
+                    if (paymentFields) paymentFields.style.display = 'contents';
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 // Initialize label on load
                 updateRestockLabels();
+                if (document.getElementById('is_saldo_awal')) {
+                    toggleRestockPaymentFields();
+                }
             });
             </script>
 

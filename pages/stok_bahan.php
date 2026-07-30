@@ -254,7 +254,46 @@ unset($_SESSION['flash']);
                                    value="<?= htmlspecialchars(isset($display_harga_beli) ? (float)$display_harga_beli : '0') ?>">
                         </div>
 
+                        <?php if (!$edit_data): ?>
+                            <div class="form-group" style="grid-column: 1 / -1; margin-top: 10px; margin-bottom: 5px;">
+                                <label style="font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; color:var(--color-primary);">
+                                    <input type="checkbox" name="is_saldo_awal" id="is_saldo_awal" value="1" onchange="toggleBahanPaymentFields()">
+                                    <span>Daftarkan sebagai Saldo Awal (Stok bawaan toko, tidak memotong kas)</span>
+                                </label>
+                            </div>
 
+                            <!-- Container untuk field pembayaran yang bisa disembunyikan -->
+                            <div id="bahan_payment_fields" style="display:contents;">
+                                <div class="form-group">
+                                    <label>Metode Pembayaran</label>
+                                    <select name="metode_pembayaran" id="metode_pembayaran">
+                                        <option value="cash">Cash (Tunai)</option>
+                                        <option value="bri">Bank BRI</option>
+                                        <option value="seabank">SeaBank</option>
+                                        <option value="dana">DANA</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Biaya Ongkir (Rp)</label>
+                                    <input type="number" name="biaya_ongkir" id="biaya_ongkir" placeholder="0" value="0">
+                                </div>
+
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label>Status Pembayaran & Barang</label>
+                                    <div style="display:flex; gap:20px; align-items:center; height:42px; flex-wrap:wrap;">
+                                        <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                            <input type="radio" name="status_po" value="lunas" checked>
+                                            Lunas (Uang keluar & barang langsung masuk stok)
+                                        </label>
+                                        <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                            <input type="radio" name="status_po" value="pending_po">
+                                            Belanja PO (Uang keluar duluan, barang belum sampai)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <input type="hidden" name="konversi_nama" id="konversi_nama" value="<?= htmlspecialchars($edit_konversi['nama_satuan_beli'] ?? '') ?>">
                         <input type="hidden" name="konversi_isi" id="konversi_isi" value="<?= htmlspecialchars(isset($edit_konversi['isi_per_satuan']) ? (float)$edit_konversi['isi_per_satuan'] : '0') ?>">
@@ -506,7 +545,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     updateCalcPreview();
+    if (document.getElementById('is_saldo_awal')) {
+        toggleBahanPaymentFields();
+    }
 });
+
+function toggleBahanPaymentFields() {
+    const isSaldoAwal = document.getElementById('is_saldo_awal') && document.getElementById('is_saldo_awal').checked;
+    const paymentFields = document.getElementById('bahan_payment_fields');
+    if (paymentFields) {
+        if (isSaldoAwal) {
+            paymentFields.style.display = 'none';
+        } else {
+            paymentFields.style.display = 'contents';
+        }
+    }
+}
 </script>
 
             <?php include __DIR__ . '/../includes/footer.php'; ?>
