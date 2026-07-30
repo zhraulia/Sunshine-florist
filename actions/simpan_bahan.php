@@ -54,28 +54,14 @@ if ($id) {
 
     $_SESSION['flash'] = ['type' => 'success', 'message' => 'Bahan berhasil diperbarui.'];
 } else {
-    $metode_pembayaran = $_POST['metode_pembayaran'] ?? 'cash';
-    $biaya_ongkir       = (float)($_POST['biaya_ongkir'] ?? 0);
-    $status_po          = $_POST['status_po'] ?? 'lunas';
-
     $stok_fisik_dasar = $konversi_isi > 0 ? ($stok_fisik * $konversi_isi) : (float)$stok_fisik;
-    
     $harga_beli_dasar = $konversi_isi > 0 ? ($harga_beli / $konversi_isi) : (float)$harga_beli;
-
-    if ($stok_fisik > 0) {
-        $total_biaya = ($stok_fisik_dasar * $harga_beli_dasar) + $biaya_ongkir;
-    } else {
-        $total_biaya = 0;
-    }
-
-    // Jika status_po === 'pending_po', stok fisik awal di tabel bahan_baku diset 0 dulu sampai barang dikonfirmasi diterima
-    $stok_awal_db = ($status_po === 'pending_po') ? 0 : $stok_fisik_dasar;
 
     $stmt = $pdo->prepare("
         INSERT INTO bahan_baku (nama, satuan_dasar, stok_fisik, ambang_minimum, harga_beli)
         VALUES (?, ?, ?, ?, ?)
     ");
-    $stmt->execute([$nama, $satuan_dasar, $stok_awal_db, $ambang_minimum, $harga_beli_dasar]);
+    $stmt->execute([$nama, $satuan_dasar, $stok_fisik_dasar, $ambang_minimum, $harga_beli_dasar]);
     $bahan_baku_id = $pdo->lastInsertId();
 
     if ($konversi_nama !== '' && $konversi_isi > 0) {
@@ -83,24 +69,15 @@ if ($id) {
         $stmt_i->execute([$bahan_baku_id, $konversi_nama, $konversi_isi]);
     }
 
-    // Catat ke riwayat_stok agar stok awal ini terhubung ke Cash Overflow (Kas Keluar) jika stok_fisik_dasar > 0 atau ada ongkir
-    if ($stok_fisik_dasar > 0 || $biaya_ongkir > 0) {
-        $ket = ($status_po === 'pending_po') 
-            ? "Belanja PO stok awal bahan baru" 
-            : "Stok awal pembuatan bahan baru";
-
+    // Catat ke riwayat_stok sebagai Saldo Awal Toko (tidak memotong Kas)
+    if ($stok_fisik_dasar > 0) {
         $stmt_r = $pdo->prepare("
             INSERT INTO riwayat_stok (bahan_baku_id, jenis, jumlah, metode_pembayaran, biaya_ongkir, total_biaya, status_po, keterangan)
-            VALUES (?, 'masuk', ?, ?, ?, ?, ?, ?)
+            VALUES (?, 'masuk', ?, NULL, 0, 0, 'saldo_awal', 'Saldo Awal Toko')
         ");
         $stmt_r->execute([
             $bahan_baku_id,
-            $stok_fisik_dasar,
-            $metode_pembayaran,
-            $biaya_ongkir,
-            $total_biaya,
-            $status_po,
-            $ket
+            $stok_fisik_dasar
         ]);
     }
 

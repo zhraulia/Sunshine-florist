@@ -254,36 +254,7 @@ unset($_SESSION['flash']);
                                    value="<?= htmlspecialchars(isset($display_harga_beli) ? (float)$display_harga_beli : '0') ?>">
                         </div>
 
-                        <?php if (!$edit_data): ?>
-                            <div class="form-group">
-                                <label>Metode Pembayaran</label>
-                                <select name="metode_pembayaran" required>
-                                    <option value="cash">Cash (Tunai)</option>
-                                    <option value="bri">Bank BRI</option>
-                                    <option value="seabank">SeaBank</option>
-                                    <option value="dana">DANA</option>
-                                </select>
-                            </div>
 
-                            <div class="form-group">
-                                <label>Biaya Ongkir (Rp)</label>
-                                <input type="number" name="biaya_ongkir" placeholder="0" value="0">
-                            </div>
-
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Status Pembayaran & Barang</label>
-                                <div style="display:flex; gap:20px; align-items:center; height:42px; flex-wrap:wrap;">
-                                    <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                                        <input type="radio" name="status_po" value="lunas" checked>
-                                        Lunas (Uang keluar & barang langsung masuk stok)
-                                    </label>
-                                    <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                                        <input type="radio" name="status_po" value="pending_po">
-                                        Belanja PO (Uang keluar duluan, barang belum sampai)
-                                    </label>
-                                </div>
-                            </div>
-                        <?php endif; ?>
 
                         <input type="hidden" name="konversi_nama" id="konversi_nama" value="<?= htmlspecialchars($edit_konversi['nama_satuan_beli'] ?? '') ?>">
                         <input type="hidden" name="konversi_isi" id="konversi_isi" value="<?= htmlspecialchars(isset($edit_konversi['isi_per_satuan']) ? (float)$edit_konversi['isi_per_satuan'] : '0') ?>">

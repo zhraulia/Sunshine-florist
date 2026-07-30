@@ -26,7 +26,7 @@ function getInventoryValueAtDate($date, $pdo) {
     $stmt_r = $pdo->prepare("
         SELECT bahan_baku_id, jenis, jumlah 
         FROM riwayat_stok 
-        WHERE created_at > ? AND jenis IN ('masuk', 'keluar')
+        WHERE created_at > ? AND jenis IN ('masuk', 'keluar') AND status_po != 'saldo_awal'
     ");
     $stmt_r->execute([$date . ' 00:00:00']);
     foreach ($stmt_r->fetchAll() as $r) {
