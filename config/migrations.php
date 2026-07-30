@@ -103,4 +103,32 @@ if (isset($pdo)) {
     try { $pdo->exec("ALTER TABLE penjualan ADD COLUMN ongkir_tipe VARCHAR(20) NOT NULL DEFAULT 'kurir'"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE penjualan ADD COLUMN ongkir_nominal DECIMAL(12,2) NOT NULL DEFAULT 0"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE penjualan ADD COLUMN ongkir_metode_kurir ENUM('cash', 'bri', 'seabank', 'dana') NULL"); } catch (Exception $e) {}
+
+    // ONE-TIME RUN: WIPE TESTING DATA (KEEP TABLE STRUCTURE & USERS)
+    try {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+        $wipe_tables = [
+            'detail_penjualan_item',
+            'detail_penjualan',
+            'penjualan',
+            'detail_pesanan',
+            'pesanan_bahan',
+            'pesanan',
+            'riwayat_stok',
+            'kas_operasional',
+            'snapshot_persediaan',
+            'resep_produk',
+            'produk',
+            'bahan_baku',
+            'kategori_produk',
+            'konversi_satuan',
+            'konversi_master'
+        ];
+        foreach ($wipe_tables as $tbl) {
+            $pdo->exec("TRUNCATE TABLE $tbl");
+        }
+        // Reset settings to default
+        $pdo->exec("UPDATE pengaturan SET nama_toko = 'Sunshine Florist', tagline = 'Your moments, our blooms', warna_primary = '#A43B22', warna_aksen = '#EADCD9', logo_url = NULL LIMIT 1");
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+    } catch (Exception $e) {}
 }
