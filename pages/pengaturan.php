@@ -99,7 +99,10 @@ unset($_SESSION['flash']);
                 <p style="color:var(--color-text-muted); font-size:13px; margin-bottom:14px; line-height:1.5;">
                     Gunakan tombol di bawah ini untuk menyelaraskan struktur tabel database dan memproses migrasi data setelah melakukan deploy atau mengunggah pembaruan sistem baru.
                 </p>
-                <a href="run_migration.php" class="btn btn-secondary" style="font-weight:700;">Jalankan Sinkronisasi Database</a>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a href="run_migration.php" class="btn btn-secondary" style="font-weight:700;">Jalankan Sinkronisasi Database</a>
+                    <a href="reset_db.php" class="btn btn-danger" style="background:#A43B22; border-color:#A43B22; font-weight:700;">Kosongkan Semua Data Uji Coba</a>
+                </div>
             </div>
 
             <?php include __DIR__ . '/../includes/footer.php'; ?>
