@@ -106,4 +106,7 @@ if (isset($pdo)) {
 
     // 12. Modifikasi kolom status_po di riwayat_stok untuk mendukung 'saldo_awal'
     try { $pdo->exec("ALTER TABLE riwayat_stok MODIFY COLUMN status_po ENUM('lunas', 'pending_po', 'selesai_po', 'saldo_awal') NOT NULL DEFAULT 'lunas'"); } catch (Exception $e) {}
+
+    // 13. Ubah metode_pembayaran di riwayat_stok agar memperbolehkan NULL (untuk saldo awal)
+    try { $pdo->exec("ALTER TABLE riwayat_stok MODIFY COLUMN metode_pembayaran ENUM('cash', 'bri', 'seabank', 'dana') NULL DEFAULT NULL"); } catch (Exception $e) {}
 }
