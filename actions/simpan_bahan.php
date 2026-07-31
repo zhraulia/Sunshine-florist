@@ -22,12 +22,13 @@ if ($nama === '' || $satuan_dasar === '') {
 
 if ($id) {
     // Update — stok_fisik TIDAK diupdate dari sini (harus lewat tambah_stok.php)
+    $harga_beli_dasar = $konversi_isi > 0 ? ($harga_beli / $konversi_isi) : (float)$harga_beli;
     $stmt = $pdo->prepare("
         UPDATE bahan_baku
         SET nama = ?, satuan_dasar = ?, ambang_minimum = ?, harga_beli = ?
         WHERE id = ?
     ");
-    $stmt->execute([$nama, $satuan_dasar, $ambang_minimum, $harga_beli, $id]);
+    $stmt->execute([$nama, $satuan_dasar, $ambang_minimum, $harga_beli_dasar, $id]);
 
     // Update konversi_satuan
     // Cek dulu apakah bahan ini sudah punya konversi
