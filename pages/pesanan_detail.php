@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
                     
                     if ($photo_to_show): 
                     ?>
-                        <img src="<?= htmlspecialchars($photo_to_show) ?>" alt="Foto Pesanan" style="width:100%; height:auto; max-height:300px; object-fit:contain; border-radius:12px; border:2px solid var(--color-border);">
+                        <img src="<?= htmlspecialchars($photo_to_show) ?>" alt="Foto Pesanan" style="width:100%; height:auto; max-height:300px; object-fit:contain; border-radius:12px;">
                         <?php if ($is_custom_order): ?>
                             <form action="" method="POST" enctype="multipart/form-data" style="margin-top:10px;">
                                 <label class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:11px; margin-bottom:0; cursor:pointer;">
