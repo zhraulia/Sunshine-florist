@@ -127,44 +127,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
                 </div>
 
                 <!-- Foto Produk / Foto Custom -->
-                <?php
-                $photo_to_show = null;
-                $is_custom_order = true;
-                
-                // Cari foto dari daftar produk terlebih dahulu
-                foreach ($items as $it) {
-                    if ($it['produk_id']) {
-                        $stmt_p = $pdo->prepare("SELECT foto_url FROM produk WHERE id = ?");
-                        $stmt_p->execute([$it['produk_id']]);
-                        $prod_photo = $stmt_p->fetchColumn();
-                        if ($prod_photo) {
-                            $photo_to_show = '../' . $prod_photo;
-                            $is_custom_order = false;
-                            break;
+                <div style="width:250px; flex-shrink:0; text-align:center; padding:15px; border:2px dashed var(--color-border); border-radius:16px; background:color-mix(in srgb, var(--color-primary) 6%, #ffffff); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px;">
+                    <?php
+                    $photo_to_show = null;
+                    $is_custom_order = true;
+                    
+                    // Cari foto dari daftar produk terlebih dahulu
+                    foreach ($items as $it) {
+                        if ($it['produk_id']) {
+                            $stmt_p = $pdo->prepare("SELECT foto_url FROM produk WHERE id = ?");
+                            $stmt_p->execute([$it['produk_id']]);
+                            $prod_photo = $stmt_p->fetchColumn();
+                            if ($prod_photo) {
+                                $photo_to_show = '../' . $prod_photo;
+                                $is_custom_order = false;
+                                break;
+                            }
                         }
                     }
-                }
-                
-                // Jika tidak ada produk terdaftar atau tidak punya foto, cek foto custom
-                if (!$photo_to_show && !empty($pesanan['foto_url'])) {
-                    $photo_to_show = '../' . $pesanan['foto_url'];
-                }
-                
-                if ($photo_to_show): 
-                ?>
-                    <div style="width:250px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:10px;">
-                        <img src="<?= htmlspecialchars($photo_to_show) ?>" alt="Foto Pesanan" style="width:100%; height:auto; border-radius:16px; border:2px solid var(--color-border); box-shadow: var(--shadow-sm);">
+                    
+                    // Jika tidak ada produk terdaftar atau tidak punya foto, cek foto custom
+                    if (!$photo_to_show && !empty($pesanan['foto_url'])) {
+                        $photo_to_show = '../' . $pesanan['foto_url'];
+                    }
+                    
+                    if ($photo_to_show): 
+                    ?>
+                        <img src="<?= htmlspecialchars($photo_to_show) ?>" alt="Foto Pesanan" style="width:100%; height:auto; max-height:300px; object-fit:contain; border-radius:12px; border:2px solid var(--color-border);">
                         <?php if ($is_custom_order): ?>
-                            <form action="" method="POST" enctype="multipart/form-data">
+                            <form action="" method="POST" enctype="multipart/form-data" style="margin-top:10px;">
                                 <label class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:11px; margin-bottom:0; cursor:pointer;">
                                     Ubah Foto
                                     <input type="file" name="foto_custom" onchange="this.form.submit()" style="display:none;" accept="image/*">
                                 </label>
                             </form>
                         <?php endif; ?>
-                    </div>
-                <?php else: ?>
-                    <div style="width:250px; flex-shrink:0; text-align:center; padding:15px; border:2px dashed var(--color-border); border-radius:16px; background:color-mix(in srgb, var(--color-primary) 6%, #ffffff); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px;">
+                    <?php else: ?>
                         <span style="font-size:24px; color:#8E7873; margin-bottom:6px;">📷</span>
                         <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:12px; line-height:1.3;">Belum ada foto produk/custom</div>
                         <form action="" method="POST" enctype="multipart/form-data">
@@ -173,8 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
                                 <input type="file" name="foto_custom" onchange="this.form.submit()" style="display:none;" accept="image/*">
                             </label>
                         </form>
-                    </div>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="panel" style="margin-bottom:20px;">
