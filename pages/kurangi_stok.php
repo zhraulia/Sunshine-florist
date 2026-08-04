@@ -79,6 +79,20 @@ $konversi_list = $stmt->fetchAll();
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label>Tipe Pengurangan</label>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                            <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                <input type="radio" name="tipe_pengurangan" value="rusak" checked>
+                                <span><strong>Kerusakan / Bahan Rusak</strong> (Layu, busuk, pecah - tercatat sebagai kerugian)</span>
+                            </label>
+                            <label style="font-weight:normal; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                                <input type="radio" name="tipe_pengurangan" value="koreksi">
+                                <span><strong>Koreksi Kesalahan Input</strong> (Salah ketik/kelebihan input - tidak tercatat sebagai kerugian)</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-danger" style="background:#A43B22; border-color:#A43B22;">- Simpan Pengurangan Stok</button>
                     <a href="stok_bahan.php" class="btn btn-secondary">Batal</a>
                 </form>

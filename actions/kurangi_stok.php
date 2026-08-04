@@ -40,7 +40,12 @@ if (str_starts_with($satuan_pilihan, 'master:')) {
     }
 }
 
-$keterangan = 'Pengurangan stok';
+$tipe_pengurangan = $_POST['tipe_pengurangan'] ?? 'rusak';
+if ($tipe_pengurangan === 'koreksi') {
+    $keterangan = 'Koreksi input stok';
+} else {
+    $keterangan = 'Pengurangan stok';
+}
 
 $pdo->beginTransaction();
 try {
