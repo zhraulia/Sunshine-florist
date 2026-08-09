@@ -137,4 +137,9 @@ if (isset($pdo)) {
     try {
         $pdo->exec("ALTER TABLE penjualan ADD COLUMN catatan TEXT NULL");
     } catch (Exception $e) {}
+
+    // 16. Modifikasi kolom sumber di tabel penjualan agar mendukung VARCHAR (seperti 'eceran')
+    try {
+        $pdo->exec("ALTER TABLE penjualan MODIFY COLUMN sumber VARCHAR(50) NOT NULL");
+    } catch (Exception $e) {}
 }
