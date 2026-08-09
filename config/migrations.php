@@ -132,4 +132,9 @@ if (isset($pdo)) {
               AND id NOT IN (SELECT DISTINCT pesanan_id FROM pesanan_foto)
         ");
     } catch (Exception $e) {}
+
+    // 15. Tambah kolom catatan ke tabel penjualan
+    try {
+        $pdo->exec("ALTER TABLE penjualan ADD COLUMN catatan TEXT NULL");
+    } catch (Exception $e) {}
 }

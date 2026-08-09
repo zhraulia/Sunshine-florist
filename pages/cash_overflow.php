@@ -149,7 +149,7 @@ foreach ($stmt_pj->fetchAll() as $pj) {
                 'metode' => !empty($pj['metode_pembayaran']) ? $pj['metode_pembayaran'] : 'cash',
                 'nominal' => (float)$pj['total_harga'],
                 'keterangan' => $is_eceran 
-                    ? "Penjualan Bahan Eceran (" . ($pj['nama_pembeli'] ?: 'Umum') . ")"
+                    ? "Penjualan Bahan Eceran (" . ($pj['nama_pembeli'] ?: 'Umum') . ")" . (!empty($pj['catatan']) ? " - " . $pj['catatan'] : "")
                     : "Penjualan Walk-in (" . ($pj['nama_pembeli'] ?: 'Umum') . ")",
                 'nota' => null,
                 'sumber' => 'Penjualan'
