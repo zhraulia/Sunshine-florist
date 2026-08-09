@@ -247,6 +247,16 @@ if ($tab === 'labarugi') {
     $stmt_rusak->execute([$awal, $akhir]);
     $total_kerugian_bahan = (float)$stmt_rusak->fetchColumn();
 
+    // 3.7 Hitung Omzet & HPP dari Penjualan Bahan Baku Eceran
+    $stmt_omzet_ec = $pdo->prepare("SELECT COALESCE(SUM(total_harga), 0) FROM penjualan WHERE sumber = 'eceran' AND DATE(tanggal) BETWEEN ? AND ?");
+    $stmt_omzet_ec->execute([$awal, $akhir]);
+    $omzet_eceran = (float)$stmt_omzet_ec->fetchColumn();
+    $omzet_buket = max(0, (float)$ringkasan['omzet'] - $omzet_eceran);
+
+    $stmt_hpp_ec = $pdo->prepare("SELECT COALESCE(SUM(total_modal), 0) FROM penjualan WHERE sumber = 'eceran' AND DATE(tanggal) BETWEEN ? AND ?");
+    $stmt_hpp_ec->execute([$awal, $akhir]);
+    $hpp_eceran = (float)$stmt_hpp_ec->fetchColumn();
+
     // 4. Hitung HPP & Untung Kotor
     $hpp = $persediaan_awal + $belanja_bahan - $persediaan_akhir;
     $hpp = max(0, $hpp);
@@ -557,8 +567,12 @@ if ($tab === 'labarugi') {
                                 <td style="padding:8px 0;" colspan="2">1. TOTAL PENJUALAN (OMZET)</td>
                             </tr>
                             <tr style="color:var(--color-text-muted); font-weight:600;">
-                                <td style="padding:6px 0 6px 16px;">(+) Semua Uang Masuk dari Jualan Buket / Penjualan</td>
-                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format($ringkasan['omzet'], 0, ',', '.') ?></td>
+                                <td style="padding:6px 0 6px 16px;">(+) Penjualan Buket (Selesai & Walk-in)</td>
+                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format($omzet_buket, 0, ',', '.') ?></td>
+                            </tr>
+                            <tr style="color:var(--color-text-muted); font-weight:600;">
+                                <td style="padding:6px 0 6px 16px;">(+) Penjualan Bahan Baku Eceran</td>
+                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format($omzet_eceran, 0, ',', '.') ?></td>
                             </tr>
                             <tr style="font-weight:700; background:#FAF0EC;">
                                 <td style="padding:6px 0 6px 16px; border-top:1px dashed #EADCD9; border-bottom:1px dashed #EADCD9;">TOTAL PENDAPATAN KOTOR</td>
@@ -582,14 +596,22 @@ if ($tab === 'labarugi') {
                                 <td style="padding:6px 0 6px 16px;">(-) Persediaan Akhir Bahan Baku (Sisa di Gudang)</td>
                                 <td style="text-align:right; padding:6px 0; color:#A43B22;">(Rp<?= number_format($persediaan_akhir, 0, ',', '.') ?>)</td>
                             </tr>
+                            <?php if ($total_kerugian_bahan > 0 || $hpp_eceran > 0): ?>
                             <?php if ($total_kerugian_bahan > 0): ?>
                             <tr style="color:var(--color-text-muted); font-weight:600; font-style: italic;">
                                 <td style="padding:6px 0 6px 32px; color:var(--color-primary);">└─ Termasuk Kerugian Bahan Rusak / Buang</td>
                                 <td style="text-align:right; padding:6px 0; color:var(--color-primary);">Rp<?= number_format($total_kerugian_bahan, 0, ',', '.') ?></td>
                             </tr>
+                            <?php endif; ?>
+                            <?php if ($hpp_eceran > 0): ?>
                             <tr style="color:var(--color-text-muted); font-weight:600; font-style: italic;">
-                                <td style="padding:6px 0 6px 32px;">└─ Modal Bahan Murni Terjual (HPP Normal)</td>
-                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format(max(0, $hpp - $total_kerugian_bahan), 0, ',', '.') ?></td>
+                                <td style="padding:6px 0 6px 32px; color:var(--color-primary);">└─ Termasuk HPP Bahan Eceran Terjual</td>
+                                <td style="text-align:right; padding:6px 0; color:var(--color-primary);">Rp<?= number_format($hpp_eceran, 0, ',', '.') ?></td>
+                            </tr>
+                            <?php endif; ?>
+                            <tr style="color:var(--color-text-muted); font-weight:600; font-style: italic;">
+                                <td style="padding:6px 0 6px 32px;">└─ Modal Bahan Murni Terpakai Buket (HPP Buket)</td>
+                                <td style="text-align:right; padding:6px 0;">Rp<?= number_format(max(0, $hpp - $total_kerugian_bahan - $hpp_eceran), 0, ',', '.') ?></td>
                             </tr>
                             <?php endif; ?>
                             <tr style="font-weight:700; color:var(--color-text-dark);">

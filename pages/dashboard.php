@@ -18,7 +18,7 @@ $stmt = $pdo->prepare("
     FROM detail_penjualan dp
     JOIN penjualan pj ON pj.id = dp.penjualan_id
     JOIN produk p ON p.id = dp.produk_id
-    WHERE MONTH(pj.tanggal) = MONTH(?) AND YEAR(pj.tanggal) = YEAR(?)
+    WHERE MONTH(pj.tanggal) = MONTH(?) AND YEAR(pj.tanggal) = YEAR(?) AND pj.sumber != 'eceran'
     GROUP BY dp.produk_id
     ORDER BY total_qty DESC
     LIMIT 1
@@ -43,7 +43,7 @@ $stmt = $pdo->prepare("
     SELECT COALESCE(SUM(dpi.qty), 0) AS total_qty
     FROM detail_penjualan_item dpi
     JOIN penjualan pj ON pj.id = dpi.penjualan_id
-    WHERE DATE(pj.tanggal) = ?
+    WHERE DATE(pj.tanggal) = ? AND pj.sumber != 'eceran'
 ");
 $stmt->execute([$today]);
 $produk_terjual_count = (int)$stmt->fetch()['total_qty'];

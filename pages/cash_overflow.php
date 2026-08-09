@@ -136,18 +136,21 @@ foreach ($stmt_pj->fetchAll() as $pj) {
             }
         }
     } else {
-        // Walk-in
+        // Walk-in atau Eceran
         $tgl_pj = date('Y-m-d', strtotime($pj['tanggal']));
         if ($tgl_pj >= $tgl_awal && $tgl_pj <= $tgl_akhir) {
+            $is_eceran = ($pj['sumber'] ?? '') === 'eceran';
             $mutasi_all[] = [
                 'timestamp' => strtotime($pj['tanggal']),
                 'tanggal' => $tgl_pj,
                 'created_at' => $pj['tanggal'],
                 'jenis' => 'masuk',
-                'kategori' => 'Penjualan Walk-in',
+                'kategori' => $is_eceran ? 'Penjualan Eceran' : 'Penjualan Walk-in',
                 'metode' => !empty($pj['metode_pembayaran']) ? $pj['metode_pembayaran'] : 'cash',
                 'nominal' => (float)$pj['total_harga'],
-                'keterangan' => "Penjualan Walk-in (" . ($pj['nama_pembeli'] ?: 'Umum') . ")",
+                'keterangan' => $is_eceran 
+                    ? "Penjualan Bahan Eceran (" . ($pj['nama_pembeli'] ?: 'Umum') . ")"
+                    : "Penjualan Walk-in (" . ($pj['nama_pembeli'] ?: 'Umum') . ")",
                 'nota' => null,
                 'sumber' => 'Penjualan'
             ];

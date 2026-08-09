@@ -41,7 +41,13 @@ unset($_SESSION['flash']);
                 <div class="alert alert-<?= $flash['type'] ?>"><?= htmlspecialchars($flash['message']) ?></div>
             <?php endif; ?>
 
-            <p style="margin-top:-12px; color:var(--color-text-muted); font-size:13px;">
+            <!-- ===== TAB NAVIGASI PENJUALAN ===== -->
+            <div style="display:flex; gap:12px; margin-bottom:20px; border-bottom:1px solid var(--color-border); padding-bottom:12px; margin-top:-6px;">
+                <a href="jual_langsung.php" class="btn btn-primary" style="font-weight:700; padding:8px 18px; font-size:13px;">Penjualan Buket</a>
+                <a href="jual_bahan.php" class="btn btn-secondary" style="font-weight:700; padding:8px 18px; font-size:13px;">Penjualan Bahan Eceran</a>
+            </div>
+
+            <p style="margin-top:0; color:var(--color-text-muted); font-size:13px;">
                 Buat transaksi jual langsung (walk-in) — stok langsung terpotong & tercatat sebagai penjualan begitu disimpan, tanpa tahap "menunggu jemput".
             </p>
 
