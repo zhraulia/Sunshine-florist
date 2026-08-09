@@ -9,10 +9,7 @@ $page_title = 'Penjualan Bahan Eceran';
 // Ambil list bahan baku
 $bahan_list = $pdo->query("SELECT id, nama, harga_beli, stok_fisik, stok_dicadangkan, satuan_dasar FROM bahan_baku ORDER BY nama ASC")->fetchAll();
 
-// Hitung nomor nota otomatis
-$stmt_max = $pdo->query("SELECT MAX(id) FROM penjualan");
-$next_id = ((int)$stmt_max->fetchColumn()) + 1;
-$no_nota = "NOTA-" . date('Ymd') . "-" . str_pad($next_id, 3, '0', STR_PAD_LEFT);
+
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
@@ -55,10 +52,7 @@ $current = basename($_SERVER['PHP_SELF']);
                 <div class="panel" style="margin-bottom:20px;">
                     <h3>Info Pembeli & Pembayaran</h3>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:14px;">
-                        <div class="form-group">
-                            <label>No. Nota</label>
-                            <input type="text" value="<?= htmlspecialchars($no_nota) ?>" disabled style="background:#f3f4f6; color:#6b7280; font-weight:700;">
-                        </div>
+
                         <div class="form-group">
                             <label>Nama Pembeli (opsional)</label>
                             <input type="text" name="nama_pembeli" placeholder="Boleh dikosongkan">
