@@ -73,7 +73,8 @@ function makeSearchableSelect(select) {
             create: false,
             allowEmptyOption: true,
             controlInput: '<input>',
-            plugins: ['dropdown_input']
+            plugins: ['dropdown_input'],
+            dropdownParent: 'body'
         });
 
         // Dispatch native change event so inline onchange handlers and form submits execute seamlessly
