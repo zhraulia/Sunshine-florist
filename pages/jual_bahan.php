@@ -73,10 +73,10 @@ $current = basename($_SERVER['PHP_SELF']);
                 <div class="panel" style="margin-bottom:20px;">
                     <h3>Bahan Baku Terjual</h3>
                     <div style="overflow-x:auto;">
-                        <table style="width:100%; border-collapse:collapse; min-width:600px;">
+                        <table style="width:100%; border-collapse:collapse; min-width:850px;">
                             <thead>
                                 <tr>
-                                    <th>Pilih Nama Bahan</th>
+                                    <th style="min-width:250px;">Pilih Nama Bahan</th>
                                     <th style="width:120px;">Sisa Stok</th>
                                     <th style="width:140px;">Harga Modal</th>
                                     <th style="width:100px;">Qty</th>
