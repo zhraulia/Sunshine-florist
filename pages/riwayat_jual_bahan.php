@@ -22,10 +22,7 @@ $stmt_det = $pdo->query("
     SELECT dpi.penjualan_id, dpi.nama_item, dpi.harga, dpi.qty, b.satuan_dasar
     FROM detail_penjualan_item dpi
     JOIN penjualan pj ON pj.id = dpi.penjualan_id
-    -- Join detail_penjualan to find the corresponding bahan_baku's unit
-    LEFT JOIN detail_penjualan dp ON dp.penjualan_id = pj.id 
-      AND (SELECT b2.nama FROM bahan_baku b2 WHERE b2.id = dp.bahan_baku_id) = REPLACE(dpi.nama_item, ' (Eceran)', '')
-    LEFT JOIN bahan_baku b ON b.id = dp.bahan_baku_id
+    LEFT JOIN bahan_baku b ON b.nama = REPLACE(dpi.nama_item, ' (Eceran)', '')
     WHERE pj.sumber = 'eceran'
 ");
 foreach ($stmt_det->fetchAll() as $d) {
