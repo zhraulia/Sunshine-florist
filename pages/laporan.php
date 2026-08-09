@@ -277,21 +277,31 @@ if ($tab === 'labarugi') {
     // 6. Untung Bersih
     $untung_bersih = $untung_kotor - $biaya_operasional_riil;
 
-    // 7. Perbandingan Estimasi vs Realisasi
+    // 7. Perbandingan Estimasi vs Realisasi (Hanya untuk Buket Bunga)
     $stmt_qty = $pdo->prepare("
         SELECT COALESCE(SUM(qty), 0)
         FROM detail_penjualan_item dpi
         JOIN penjualan pj ON pj.id = dpi.penjualan_id
-        WHERE DATE(pj.tanggal) BETWEEN ? AND ?
+        WHERE pj.sumber != 'eceran' AND DATE(pj.tanggal) BETWEEN ? AND ?
     ");
     $stmt_qty->execute([$awal, $akhir]);
     $total_buket_laku = (int)$stmt_qty->fetchColumn();
+
+    // Hitung total unit bahan eceran terjual
+    $stmt_qty_ec = $pdo->prepare("
+        SELECT COALESCE(SUM(qty), 0)
+        FROM detail_penjualan_item dpi
+        JOIN penjualan pj ON pj.id = dpi.penjualan_id
+        WHERE pj.sumber = 'eceran' AND DATE(pj.tanggal) BETWEEN ? AND ?
+    ");
+    $stmt_qty_ec->execute([$awal, $akhir]);
+    $total_bahan_eceran_laku = (float)$stmt_qty_ec->fetchColumn();
 
     $stmt_target_ops = $pdo->prepare("
         SELECT COALESCE(SUM(biaya_operasional * qty), 0)
         FROM detail_penjualan_item dpi
         JOIN penjualan pj ON pj.id = dpi.penjualan_id
-        WHERE DATE(pj.tanggal) BETWEEN ? AND ?
+        WHERE pj.sumber != 'eceran' AND DATE(pj.tanggal) BETWEEN ? AND ?
     ");
     $stmt_target_ops->execute([$awal, $akhir]);
     $target_anggaran_ops = (float)$stmt_target_ops->fetchColumn();
@@ -685,6 +695,10 @@ if ($tab === 'labarugi') {
                                 <li>
                                     Total Buket yang Laku Periode Ini : 
                                     <strong><?= $total_buket_laku ?> Pcs</strong> (Hasil penjualan langsung & pesanan selesai)
+                                </li>
+                                <li>
+                                    Total Bahan Eceran Terjual Periode Ini : 
+                                    <strong><?= $total_bahan_eceran_laku ?> Pcs</strong> (Hasil penjualan bahan eceran)
                                 </li>
                                 <li>
                                     Target Anggaran Toko Terkumpul : 
