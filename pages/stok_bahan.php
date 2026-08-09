@@ -162,12 +162,20 @@ unset($_SESSION['flash']);
                                     <td style="font-weight:700; color:var(--color-danger);">Rp<?= number_format($po['total_biaya'], 0, ',', '.') ?></td>
                                     <td><?= htmlspecialchars($po['keterangan'] ?: '-') ?></td>
                                     <td style="text-align:center;">
-                                        <form action="../actions/konfirmasi_po.php" method="POST" onsubmit="return confirm('Konfirmasi bahwa fisik barang ini sudah sampai di toko?')">
-                                            <input type="hidden" name="riwayat_id" value="<?= $po['id'] ?>">
-                                            <button type="submit" class="btn btn-primary btn-sm" style="padding:6px 14px; font-size:12px; font-weight:700; background:#059669; border-color:#059669;">
-                                                ✓ Konfirmasi Barang Diterima
-                                            </button>
-                                        </form>
+                                        <div style="display:flex; gap:8px; justify-content:center; align-items:center;">
+                                            <form action="../actions/konfirmasi_po.php" method="POST" onsubmit="return confirm('Konfirmasi bahwa fisik barang ini sudah sampai di toko?')">
+                                                <input type="hidden" name="riwayat_id" value="<?= $po['id'] ?>">
+                                                <button type="submit" class="btn btn-primary btn-sm" style="padding:6px 12px; font-size:12px; font-weight:700; background:#059669; border-color:#059669; white-space:nowrap;">
+                                                    ✓ Diterima
+                                                </button>
+                                            </form>
+                                            <form action="../actions/batal_po.php" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan PO belanja bahan ini? Saldo kas yang sempat terpotong akan otomatis dikembalikan.')">
+                                                <input type="hidden" name="riwayat_id" value="<?= $po['id'] ?>">
+                                                <button type="submit" class="btn btn-danger btn-sm" style="padding:6px 12px; font-size:12px; font-weight:700; background:#A43B22; border-color:#A43B22; white-space:nowrap;">
+                                                    ✖ Batal
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
