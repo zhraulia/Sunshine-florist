@@ -1,37 +1,45 @@
 <?php
 // pages/riwayat_jual_bahan.php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/../includes/auth.php';
 require_login();
 require_once __DIR__ . '/../config/database.php';
 
 $page_title = 'Riwayat Penjualan Eceran';
-
-// Fetch all retail sales
-$stmt = $pdo->prepare("
-    SELECT id, nama_pembeli, total_harga, metode_pembayaran, catatan, tanggal
-    FROM penjualan
-    WHERE sumber = 'eceran'
-    ORDER BY id DESC
-");
-$stmt->execute();
-$sales_list = $stmt->fetchAll();
-
-// Fetch items detail map for all retail sales
+$sales_list = [];
 $details_map = [];
-$stmt_det = $pdo->query("
-    SELECT dpi.penjualan_id, dpi.nama_item, dpi.harga, dpi.qty, b.satuan_dasar
-    FROM detail_penjualan_item dpi
-    JOIN penjualan pj ON pj.id = dpi.penjualan_id
-    LEFT JOIN bahan_baku b ON b.nama = REPLACE(dpi.nama_item, ' (Eceran)', '')
-    WHERE pj.sumber = 'eceran'
-");
-foreach ($stmt_det->fetchAll() as $d) {
-    $details_map[$d['penjualan_id']][] = [
-        'nama_item' => str_replace(' (Eceran)', '', $d['nama_item']),
-        'harga' => (float)$d['harga'],
-        'qty' => (float)$d['qty'],
-        'satuan' => $d['satuan_dasar'] ?: 'unit'
-    ];
+
+try {
+    // Fetch all retail sales
+    $stmt = $pdo->prepare("
+        SELECT id, nama_pembeli, total_harga, metode_pembayaran, catatan, tanggal
+        FROM penjualan
+        WHERE sumber = 'eceran'
+        ORDER BY id DESC
+    ");
+    $stmt->execute();
+    $sales_list = $stmt->fetchAll();
+
+    // Fetch items detail map for all retail sales
+    $stmt_det = $pdo->query("
+        SELECT dpi.penjualan_id, dpi.nama_item, dpi.harga, dpi.qty, b.satuan_dasar
+        FROM detail_penjualan_item dpi
+        JOIN penjualan pj ON pj.id = dpi.penjualan_id
+        LEFT JOIN bahan_baku b ON b.nama = REPLACE(dpi.nama_item, ' (Eceran)', '')
+        WHERE pj.sumber = 'eceran'
+    ");
+    foreach ($stmt_det->fetchAll() as $d) {
+        $details_map[$d['penjualan_id']][] = [
+            'nama_item' => str_replace(' (Eceran)', '', $d['nama_item']),
+            'harga' => (float)$d['harga'],
+            'qty' => (float)$d['qty'],
+            'satuan' => $d['satuan_dasar'] ?: 'unit'
+        ];
+    }
+} catch (Exception $e) {
+    die("Database Error: " . $e->getMessage() . "<br>Line: " . $e->getLine());
 }
 ?>
 <!DOCTYPE html>
