@@ -109,4 +109,27 @@ if (isset($pdo)) {
 
     // 13. Ubah metode_pembayaran di riwayat_stok agar memperbolehkan NULL (untuk saldo awal)
     try { $pdo->exec("ALTER TABLE riwayat_stok MODIFY COLUMN metode_pembayaran ENUM('cash', 'bri', 'seabank', 'dana') NULL DEFAULT NULL"); } catch (Exception $e) {}
+
+    // 14. Buat tabel pesanan_foto untuk mendukung banyak foto custom per pesanan
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS pesanan_foto (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                pesanan_id INT NOT NULL,
+                foto_url VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (pesanan_id) REFERENCES pesanan(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ");
+    } catch (Exception $e) {}
+
+    // Migrasikan foto_url lama dari tabel pesanan ke pesanan_foto jika belum dimigrasi
+    try {
+        $pdo->exec("
+            INSERT INTO pesanan_foto (pesanan_id, foto_url)
+            SELECT id, foto_url FROM pesanan 
+            WHERE foto_url IS NOT NULL AND foto_url != ''
+              AND id NOT IN (SELECT DISTINCT pesanan_id FROM pesanan_foto)
+        ");
+    } catch (Exception $e) {}
 }

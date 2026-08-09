@@ -123,7 +123,7 @@ unset($_SESSION['flash']);
 <body>
     <div class="app-layout">
         <?php include __DIR__ . '/../includes/sidebar.php'; ?>
-
+    
         <main class="main-content">
             <?php include __DIR__ . '/../includes/header.php'; ?>
 

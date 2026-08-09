@@ -59,14 +59,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
             }
             
             // Generate filename
-            $filename = 'custom_order_' . $id . '_' . time() . '.' . $ext;
+            $filename = 'custom_order_' . $id . '_' . time() . '_' . rand(100, 999) . '.' . $ext;
             $destination = $upload_dir . $filename;
             
             if (move_uploaded_file($file['tmp_name'], $destination)) {
-                // Update database
                 $db_path = 'uploads/' . $filename;
-                $stmt = $pdo->prepare("UPDATE pesanan SET foto_url = ? WHERE id = ?");
-                $stmt->execute([$db_path, $id]);
+                // Update database: check if pesanan_foto table exists, else fallback to pesanan.foto_url
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO pesanan_foto (pesanan_id, foto_url) VALUES (?, ?)");
+                    $stmt->execute([$id, $db_path]);
+                } catch (Exception $e) {
+                    $stmt = $pdo->prepare("UPDATE pesanan SET foto_url = ? WHERE id = ?");
+                    $stmt->execute([$db_path, $id]);
+                }
                 
                 // Refresh data
                 header("Location: pesanan_detail.php?id=" . $id);
@@ -127,51 +132,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto_custom'])) {
                 </div>
 
                 <!-- Foto Produk / Foto Custom -->
-                <div style="width:250px; flex-shrink:0; text-align:center; padding:15px; border:2px dashed var(--color-border); border-radius:16px; background:color-mix(in srgb, var(--color-primary) 6%, #ffffff); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px;">
+                <div style="width:250px; flex-shrink:0; text-align:center; padding:15px; border:2px dashed var(--color-border); border-radius:16px; background:color-mix(in srgb, var(--color-primary) 6%, #ffffff); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:180px; gap:16px;">
                     <?php
-                    $photo_to_show = null;
-                    $is_custom_order = true;
-                    
-                    // Cari foto dari daftar produk terlebih dahulu
+                    // 1. Cari semua foto dari produk katalog
+                    $product_photos = [];
                     foreach ($items as $it) {
                         if ($it['produk_id']) {
-                            $stmt_p = $pdo->prepare("SELECT foto_url FROM produk WHERE id = ?");
+                            $stmt_p = $pdo->prepare("SELECT nama, foto_url FROM produk WHERE id = ?");
                             $stmt_p->execute([$it['produk_id']]);
-                            $prod_photo = $stmt_p->fetchColumn();
-                            if ($prod_photo) {
-                                $photo_to_show = '../' . $prod_photo;
-                                $is_custom_order = false;
-                                break;
+                            $prod = $stmt_p->fetch();
+                            if ($prod && $prod['foto_url']) {
+                                $product_photos[] = [
+                                    'url' => '../' . $prod['foto_url'],
+                                    'label' => 'Katalog: ' . $prod['nama']
+                                ];
                             }
                         }
                     }
-                    
-                    // Jika tidak ada produk terdaftar atau tidak punya foto, cek foto custom
-                    if (!$photo_to_show && !empty($pesanan['foto_url'])) {
-                        $photo_to_show = '../' . $pesanan['foto_url'];
+
+                    // 2. Ambil semua foto custom
+                    $custom_photos = [];
+                    try {
+                        $stmt_f = $pdo->prepare("SELECT id, foto_url FROM pesanan_foto WHERE pesanan_id = ? ORDER BY id ASC");
+                        $stmt_f->execute([$id]);
+                        foreach ($stmt_f->fetchAll() as $f) {
+                            $custom_photos[] = [
+                                'id' => $f['id'],
+                                'url' => '../' . $f['foto_url'],
+                                'label' => 'Foto Custom'
+                            ];
+                        }
+                    } catch (Exception $e) {
+                        // Fallback jika belum sinkronisasi database
+                        if (!empty($pesanan['foto_url'])) {
+                            $custom_photos[] = [
+                                'id' => null,
+                                'url' => '../' . $pesanan['foto_url'],
+                                'label' => 'Foto Custom'
+                            ];
+                        }
                     }
+
+                    $has_any_photos = (!empty($product_photos) || !empty($custom_photos));
                     
-                    if ($photo_to_show): 
+                    if ($has_any_photos):
                     ?>
-                        <img src="<?= htmlspecialchars($photo_to_show) ?>" alt="Foto Pesanan" style="width:100%; height:auto; max-height:300px; object-fit:contain; border-radius:12px;">
-                        <?php if ($is_custom_order): ?>
-                            <form action="" method="POST" enctype="multipart/form-data" style="margin-top:10px;">
-                                <label class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:11px; margin-bottom:0; cursor:pointer;">
-                                    Ubah Foto
-                                    <input type="file" name="foto_custom" onchange="this.form.submit()" style="display:none;" accept="image/*">
-                                </label>
-                            </form>
-                        <?php endif; ?>
+                        <div style="display:flex; flex-direction:column; gap:16px; width:100%;">
+                            <?php foreach ($product_photos as $p): ?>
+                                <div style="width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; border-bottom:1px dashed var(--color-border); padding-bottom:12px;">
+                                    <img src="<?= htmlspecialchars($p['url']) ?>" alt="Foto Produk" style="width:100%; height:auto; max-height:220px; object-fit:contain; border-radius:12px;">
+                                    <span style="font-size:10px; font-weight:700; color:var(--color-text-muted);"><?= htmlspecialchars($p['label']) ?></span>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <?php foreach ($custom_photos as $f): ?>
+                                <div style="width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; border-bottom:1px dashed var(--color-border); padding-bottom:12px;">
+                                    <img src="<?= htmlspecialchars($f['url']) ?>" alt="Foto Custom" style="width:100%; height:auto; max-height:220px; object-fit:contain; border-radius:12px;">
+                                    <span style="font-size:10px; font-weight:700; color:var(--color-text-muted);"><?= htmlspecialchars($f['label']) ?></span>
+                                    
+                                    <?php if ($f['id']): ?>
+                                        <form action="../actions/hapus_foto_pesanan.php" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto custom ini?')" style="margin-top:4px;">
+                                            <input type="hidden" name="foto_id" value="<?= $f['id'] ?>">
+                                            <input type="hidden" name="pesanan_id" value="<?= $id ?>">
+                                            <button type="submit" class="btn btn-secondary btn-sm" style="padding:2px 8px; font-size:10px; background:#A43B22; color:#fff; border-color:#A43B22; border-radius:8px; line-height:1.2;">
+                                                ✖ Hapus
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     <?php else: ?>
-                        <span style="font-size:24px; color:#8E7873; margin-bottom:6px;">📷</span>
-                        <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:12px; line-height:1.3;">Belum ada foto produk/custom</div>
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <label class="btn btn-primary btn-sm" style="margin-bottom:0; cursor:pointer; font-size:11px; padding:6px 12px;">
-                                + Tambah Foto
-                                <input type="file" name="foto_custom" onchange="this.form.submit()" style="display:none;" accept="image/*">
-                            </label>
-                        </form>
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; width:100%; height:100%;">
+                            <span style="font-size:24px; color:#8E7873; margin-bottom:6px;">📷</span>
+                            <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:12px; line-height:1.3;">Belum ada foto produk/custom</div>
+                        </div>
                     <?php endif; ?>
+
+                    <form action="" method="POST" enctype="multipart/form-data" style="width:100%; margin-top:4px;">
+                        <label class="btn btn-primary btn-sm" style="margin-bottom:0; cursor:pointer; font-size:11px; padding:6px 12px; width:100%; box-sizing:border-box; display:inline-block; text-align:center;">
+                            + Tambah Foto Custom
+                            <input type="file" name="foto_custom" onchange="this.form.submit()" style="display:none;" accept="image/*">
+                        </label>
+                    </form>
                 </div>
             </div>
 
