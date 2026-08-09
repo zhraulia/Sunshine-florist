@@ -320,7 +320,10 @@ unset($_SESSION['flash']);
             <!-- ===== DAFTAR BAHAN ===== -->
             <div class="panel">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
-                    <h3 style="margin:0;">Daftar Bahan Baku</h3>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <h3 style="margin:0;">Daftar Bahan Baku</h3>
+                        <a href="riwayat_stok_tampil.php" class="btn btn-secondary btn-sm" style="font-weight:700; height:38px; display:inline-flex; align-items:center; padding:0 14px;">Riwayat Mutasi Stok</a>
+                    </div>
                     <form method="GET" style="display:flex; gap:8px; align-items:center; margin:0;">
                         <input type="text" name="search" value="<?= htmlspecialchars($search_query) ?>" placeholder="Cari nama bahan / satuan..." style="height:38px; padding:0 12px; font-size:13px; width:220px; margin:0;">
                         <button type="submit" class="btn btn-primary btn-sm" style="height:38px; padding:0 16px;">Cari</button>
