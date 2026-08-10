@@ -738,6 +738,9 @@ tr:last-child td {
 .badge-dibatalkan { background: var(--color-danger); color: #fff; }
 
 /* ===== TOM SELECT OVERRIDES ===== */
+select.tomselected {
+    display: none !important;
+}
 /* Fix transparency and match custom dusty rose design theme */
 .ts-wrapper.single .ts-control {
     background-color: #fff !important;

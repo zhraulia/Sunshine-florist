@@ -49,7 +49,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Penjualan Eceran - Sunshine Florist</title>
     <link rel="icon" href="../assets/images/logo-sunshine.png">
-    <link rel="stylesheet" href="../assets/css/style_v2.css">
+    <link rel="stylesheet" href="../assets/css/style_v2.css?v=1.4">
 </head>
 <body>
     <div class="app-layout">
