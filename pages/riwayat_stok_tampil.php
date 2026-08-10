@@ -13,6 +13,8 @@ $bahan_dropdown = $pdo->query("SELECT id, nama FROM bahan_baku ORDER BY nama ASC
 $filter_bahan = $_GET['bahan_id'] ?? '';
 $filter_aktivitas = $_GET['aktivitas'] ?? '';
 $filter_alasan = $_GET['alasan'] ?? '';
+$filter_tgl_awal = $_GET['tgl_awal'] ?? '';
+$filter_tgl_akhir = $_GET['tgl_akhir'] ?? '';
 
 // Query riwayat stok dari awal (ASC) untuk menghitung sisa stok berjalan secara akurat
 $query = "
@@ -84,6 +86,14 @@ foreach ($all_records as $row) {
         if ($filter_alasan === 'koreksi' && $row['alasan_kategori'] !== 'Koreksi Input') $keep = false;
         if ($filter_alasan === 'saldo_awal' && $row['alasan_kategori'] !== 'Saldo Awal') $keep = false;
     }
+    if ($filter_tgl_awal !== '') {
+        $row_date = date('Y-m-d', strtotime($row['created_at']));
+        if ($row_date < $filter_tgl_awal) $keep = false;
+    }
+    if ($filter_tgl_akhir !== '') {
+        $row_date = date('Y-m-d', strtotime($row['created_at']));
+        if ($row_date > $filter_tgl_akhir) $keep = false;
+    }
 
     if ($keep) {
         $processed_rows[] = $row;
@@ -122,7 +132,7 @@ $display_rows = array_reverse($processed_rows);
             <!-- ===== PANEL FILTER ===== -->
             <div class="panel" style="margin-bottom:24px;">
                 <h3>Filter Riwayat</h3>
-                <form method="GET" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:14px; align-items:flex-end;">
+                <form method="GET" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:14px; align-items:flex-end;">
                     <div class="form-group" style="margin-bottom:0;">
                         <label>Bahan Baku</label>
                         <select name="bahan_id">
@@ -153,9 +163,17 @@ $display_rows = array_reverse($processed_rows);
                             <option value="saldo_awal" <?= $filter_alasan === 'saldo_awal' ? 'selected' : '' ?>>Saldo Awal</option>
                         </select>
                     </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Tanggal Awal</label>
+                        <input type="date" name="tgl_awal" value="<?= htmlspecialchars($filter_tgl_awal) ?>" style="height:38px; margin:0;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Tanggal Akhir</label>
+                        <input type="date" name="tgl_akhir" value="<?= htmlspecialchars($filter_tgl_akhir) ?>" style="height:38px; margin:0;">
+                    </div>
                     <div style="display:flex; gap:8px;">
                         <button type="submit" class="btn btn-primary" style="flex:1; height:38px;">Terapkan</button>
-                        <?php if ($filter_bahan !== '' || $filter_aktivitas !== '' || $filter_alasan !== ''): ?>
+                        <?php if ($filter_bahan !== '' || $filter_aktivitas !== '' || $filter_alasan !== '' || $filter_tgl_awal !== '' || $filter_tgl_akhir !== ''): ?>
                             <a href="riwayat_stok_tampil.php" class="btn btn-secondary" style="height:38px; display:inline-flex; align-items:center; justify-content:center; padding:0 14px;">Reset</a>
                         <?php endif; ?>
                     </div>
