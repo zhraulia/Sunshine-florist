@@ -77,15 +77,16 @@ try {
                                 <th style="padding:10px 8px; width:120px;">No. Transaksi</th>
                                 <th style="padding:10px 8px; width:150px;">Tanggal & Waktu</th>
                                 <th style="padding:10px 8px;">Nama Pembeli</th>
-                                <th style="padding:10px 8px; width:160px;">Opsi Pembayaran</th>
-                                <th style="padding:10px 8px; width:140px; text-align:right;">Grand Total</th>
-                                <th style="padding:10px 8px; width:120px; text-align:center;">Aksi</th>
+                                <th style="padding:10px 8px; width:140px;">Opsi Pembayaran</th>
+                                <th style="padding:10px 8px; width:120px; text-align:right;">Grand Total</th>
+                                <th style="padding:10px 8px;">Catatan</th>
+                                <th style="padding:10px 8px; width:110px; text-align:center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($sales_list)): ?>
                                 <tr>
-                                    <td colspan="6" style="text-align:center; padding:20px; color:var(--color-text-muted);">Belum ada riwayat penjualan bahan eceran.</td>
+                                    <td colspan="7" style="text-align:center; padding:20px; color:var(--color-text-muted);">Belum ada riwayat penjualan bahan eceran.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($sales_list as $s): ?>
@@ -107,6 +108,9 @@ try {
                                         <td style="padding:10px 8px; text-align:right; font-weight:700; color:var(--color-primary);">
                                             Rp<?= number_format($s['total_harga'], 0, ',', '.') ?>
                                         </td>
+                                        <td style="padding:10px 8px; color:var(--color-text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($s['catatan'] ?: '') ?>">
+                                            <?= htmlspecialchars($s['catatan'] ?: '-') ?>
+                                        </td>
                                         <td style="padding:10px 8px; text-align:center;">
                                             <button type="button" class="btn btn-secondary btn-sm" onclick="showDetail(<?= $s['id'] ?>)" style="padding:4px 10px; font-size:11px; font-weight:700;">
                                                 Lihat Detail
@@ -123,7 +127,10 @@ try {
             <!-- ===== MODAL DETAIL RINCIAN ===== -->
             <div id="detailModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
                 <div class="panel" style="width:100%; max-width:550px; margin:20px; position:relative; box-sizing:border-box;">
-                    <h3 style="margin-top:0; margin-bottom:16px;">Rincian Transaksi <span id="modal-trx-title" style="color:var(--color-primary);"></span></h3>
+                    <h3 style="margin-top:0; margin-bottom:4px;">Rincian Transaksi <span id="modal-trx-title" style="color:var(--color-primary);"></span></h3>
+                    <p style="margin:0 0 16px 0; font-size:12px; color:var(--color-text-muted);">
+                        Catatan: <span id="modal-trx-catatan" style="color:var(--color-text-dark); font-weight:600; font-style:italic;">-</span>
+                    </p>
                     
                     <div style="max-height:300px; overflow-y:auto; margin-bottom:20px;">
                         <table style="width:100%; border-collapse:collapse; font-size:13px; line-height:1.5;">
@@ -153,13 +160,20 @@ try {
 
     <script>
     const detailsMap = <?= json_encode($details_map) ?>;
+    const salesList = <?= json_encode($sales_list) ?>;
 
     function showDetail(id) {
         const modal = document.getElementById('detailModal');
         const titleSpan = document.getElementById('modal-trx-title');
+        const catatanSpan = document.getElementById('modal-trx-catatan');
         const tbody = document.getElementById('modal-items-body');
 
         titleSpan.textContent = `#${id}`;
+        
+        // Temukan catatan transaksi
+        const sale = salesList.find(s => s.id == id);
+        catatanSpan.textContent = sale && sale.catatan ? sale.catatan : '-';
+
         tbody.innerHTML = '';
 
         const items = detailsMap[id] || [];
