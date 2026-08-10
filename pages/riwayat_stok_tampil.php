@@ -12,7 +12,6 @@ $bahan_dropdown = $pdo->query("SELECT id, nama FROM bahan_baku ORDER BY nama ASC
 // Ambil parameter filter
 $filter_bahan = $_GET['bahan_id'] ?? '';
 $filter_aktivitas = $_GET['aktivitas'] ?? '';
-$filter_alasan = $_GET['alasan'] ?? '';
 $filter_tgl_awal = $_GET['tgl_awal'] ?? '';
 $filter_tgl_akhir = $_GET['tgl_akhir'] ?? '';
 
@@ -77,15 +76,7 @@ foreach ($all_records as $row) {
         if ($filter_aktivitas === 'masuk' && $row['jenis'] !== 'masuk') $keep = false;
         if ($filter_aktivitas === 'keluar' && $row['jenis'] !== 'keluar') $keep = false;
     }
-    if ($filter_alasan !== '') {
-        if ($filter_alasan === 'supplier' && $row['alasan_kategori'] !== 'Pembelian Supplier') $keep = false;
-        if ($filter_alasan === 'pesanan' && $row['alasan_kategori'] !== 'Produksi Pesanan') $keep = false;
-        if ($filter_alasan === 'walkin' && $row['alasan_kategori'] !== 'Produksi Walk-in') $keep = false;
-        if ($filter_alasan === 'eceran' && $row['alasan_kategori'] !== 'Penjualan Eceran') $keep = false;
-        if ($filter_alasan === 'rusak' && $row['alasan_kategori'] !== 'Rusak / Layu (Wastage)') $keep = false;
-        if ($filter_alasan === 'koreksi' && $row['alasan_kategori'] !== 'Koreksi Input') $keep = false;
-        if ($filter_alasan === 'saldo_awal' && $row['alasan_kategori'] !== 'Saldo Awal') $keep = false;
-    }
+
     if ($filter_tgl_awal !== '') {
         $row_date = date('Y-m-d', strtotime($row['created_at']));
         if ($row_date < $filter_tgl_awal) $keep = false;
@@ -151,19 +142,6 @@ $display_rows = array_reverse($processed_rows);
                         </select>
                     </div>
                     <div class="form-group" style="margin-bottom:0;">
-                        <label>Alasan / Kategori</label>
-                        <select name="alasan">
-                            <option value="">-- Semua Alasan --</option>
-                            <option value="supplier" <?= $filter_alasan === 'supplier' ? 'selected' : '' ?>>Pembelian Supplier</option>
-                            <option value="pesanan" <?= $filter_alasan === 'pesanan' ? 'selected' : '' ?>>Produksi Pesanan</option>
-                            <option value="walkin" <?= $filter_alasan === 'walkin' ? 'selected' : '' ?>>Produksi Walk-in</option>
-                            <option value="eceran" <?= $filter_alasan === 'eceran' ? 'selected' : '' ?>>Penjualan Eceran</option>
-                            <option value="rusak" <?= $filter_alasan === 'rusak' ? 'selected' : '' ?>>Rusak / Layu (Wastage)</option>
-                            <option value="koreksi" <?= $filter_alasan === 'koreksi' ? 'selected' : '' ?>>Koreksi Input</option>
-                            <option value="saldo_awal" <?= $filter_alasan === 'saldo_awal' ? 'selected' : '' ?>>Saldo Awal</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
                         <label>Tanggal Awal</label>
                         <input type="date" name="tgl_awal" value="<?= htmlspecialchars($filter_tgl_awal) ?>" style="height:38px; margin:0;">
                     </div>
@@ -173,7 +151,7 @@ $display_rows = array_reverse($processed_rows);
                     </div>
                     <div style="display:flex; gap:8px;">
                         <button type="submit" class="btn btn-primary" style="flex:1; height:38px;">Terapkan</button>
-                        <?php if ($filter_bahan !== '' || $filter_aktivitas !== '' || $filter_alasan !== '' || $filter_tgl_awal !== '' || $filter_tgl_akhir !== ''): ?>
+                        <?php if ($filter_bahan !== '' || $filter_aktivitas !== '' || $filter_tgl_awal !== '' || $filter_tgl_akhir !== ''): ?>
                             <a href="riwayat_stok_tampil.php" class="btn btn-secondary" style="height:38px; display:inline-flex; align-items:center; justify-content:center; padding:0 14px;">Reset</a>
                         <?php endif; ?>
                     </div>
