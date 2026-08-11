@@ -15,11 +15,12 @@ $filter_aktivitas = $_GET['aktivitas'] ?? '';
 $filter_tgl_awal = $_GET['tgl_awal'] ?? '';
 $filter_tgl_akhir = $_GET['tgl_akhir'] ?? '';
 
-// Query riwayat stok dari awal (ASC) untuk menghitung sisa stok berjalan secara akurat
+// Query riwayat stok dari awal (ASC) untuk menghitung sisa stok berjalan secara akurat (Kecuali PO yang masih pending)
 $query = "
     SELECT r.*, b.nama AS nama_bahan, b.satuan_dasar
     FROM riwayat_stok r
     JOIN bahan_baku b ON b.id = r.bahan_baku_id
+    WHERE r.status_po != 'pending_po'
     ORDER BY r.id ASC
 ";
 $stmt = $pdo->query($query);
