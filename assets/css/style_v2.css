@@ -769,7 +769,7 @@ select.tomselected {
     border-radius: 12px !important;
     box-shadow: 0 8px 24px rgba(197, 161, 155, 0.15) !important;
     margin-top: 4px !important;
-    z-index: 2000 !important; /* on top of everything! */
+    z-index: 100000 !important; /* on top of everything including modals! */
     font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
