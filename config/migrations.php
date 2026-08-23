@@ -142,4 +142,9 @@ if (isset($pdo)) {
     try {
         $pdo->exec("ALTER TABLE penjualan MODIFY COLUMN sumber VARCHAR(50) NOT NULL");
     } catch (Exception $e) {}
+
+    // 17. Koreksi tanggal riwayat_stok untuk PO tanggal 19 Agustus yang baru saja selesai dikonfirmasi
+    try {
+        $pdo->exec("UPDATE riwayat_stok SET created_at = '2026-08-23 13:11:00' WHERE status_po = 'selesai_po' AND DATE(created_at) = '2026-08-19'");
+    } catch (Exception $e) {}
 }

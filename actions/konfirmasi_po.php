@@ -23,8 +23,8 @@ if ($riwayat_id > 0) {
             $stmt = $pdo->prepare("UPDATE bahan_baku SET stok_fisik = stok_fisik + ? WHERE id = ?");
             $stmt->execute([$po['jumlah'], $po['bahan_baku_id']]);
 
-            // Update status PO menjadi selesai_po
-            $stmt = $pdo->prepare("UPDATE riwayat_stok SET status_po = 'selesai_po' WHERE id = ?");
+            // Update status PO menjadi selesai_po dan perbarui waktu ke waktu saat ini (barang sampai)
+            $stmt = $pdo->prepare("UPDATE riwayat_stok SET status_po = 'selesai_po', created_at = CURRENT_TIMESTAMP WHERE id = ?");
             $stmt->execute([$riwayat_id]);
 
             $pdo->commit();
